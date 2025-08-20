@@ -1,0 +1,57 @@
+{% extends 'financeiro/base.html' %}
+{% block title %}Contas{% endblock %}
+
+{% block content %}
+
+{% load static %}
+<script src="{% static 'financeiro/scripts/script.js' %}"></script>
+<link href="{% static 'financeiro/css/style.css' %}" rel="stylesheet">
+{% include 'financeiro/conta_form.html' %}
+
+<div class="d-flex justify-content-between">
+    <h2>Contas</h2>
+    <button onclick="showDropbox()" class="btn btn-primary mb-3">Nova Conta</button>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Tipo</th>
+            <th>Cliente</th>
+            <th>Categoria</th>
+            <th>Valor</th>
+            <th>Vencimento</th>
+            <th>Pagamento</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for conta in contas %}
+        <tr id="{{ conta.id }}" onclick="select('{{ conta.id }}')" class="selected">
+            <td>{{ conta.get_tipo_display }}</td>
+            <td>{{ conta.cliente }}</td>
+            <td>{{ conta.categoria }}</td>
+            <td>R$ {{ conta.valor }}</td>
+            <td>{{ conta.data_vencimento }}</td>
+            <td>{{ conta.data_pagamento|default:"—" }}</td>
+            <td>{{ conta.status }}</td>
+            <td>
+                {% if conta.data_pagamento %}
+                {% else %}
+                    <form method="post" action="{% url 'marcar_como_pago' conta.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-sm">Marcar como paga</button>
+                    </form>
+                    <form method="post" action="{% url 'marcar_como_pago' conta.pk %}">
+                        {% csrf_token %}
+                        <div id="pagar-{{ conta.id }}">
+                            <button onclick="pagar('{{ conta.id }}')" class="btn btn-success btn-sm">Pagar</button>
+                        </div>
+                    </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'financeiro/base.html' %}
+{% block title %}Categorias{% endblock %}
+
+{% block content %}
+
+{% load static %}
+<script src="{% static 'financeiro/scripts/script.js' %}"></script>
+<link href="{% static 'financeiro/css/style.css' %}" rel="stylesheet">
+{% include 'financeiro/categoria_form.html' %}
+
+<div class="d-flex justify-content-between">
+    <h2>Categorias</h2>
+    <button onclick="showDropbox()" class="btn btn-primary mb-3">Nova Categoria</button>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nome</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for categoria in categorias %}
+        <tr id="{{ categoria.id }}" onclick="select('{{ categoria.id }}')" class="selected">
+            <td>{{ categoria.nome }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

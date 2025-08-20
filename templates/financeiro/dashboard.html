@@ -1,0 +1,93 @@
+{% extends 'financeiro/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h2>Dashboard Financeiro</h2>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5>Entradas</h5>
+                <h3>R$ {{ total_entrada|floatformat:2 }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h5>Saídas</h5>
+                <h3>R$ {{ total_saida|floatformat:2 }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5>Saldo</h5>
+                <h3>R$ {{ saldo|floatformat:2 }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4>Resumo Mensal</h4>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Mês</th>
+            <th>Entradas</th>
+            <th>Saídas</th>
+            <th>Saldo</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in resumo_mensal %}
+        <tr>
+            <td>{{ item.mes }}</td>
+            <td>R$ {{ item.entrada|floatformat:2 }}</td>
+            <td>R$ {{ item.saida|floatformat:2 }}</td>
+            <td>R$ {{ item.saldo|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h4 class="mt-5">Gráfico de Entradas e Saídas</h4>
+<canvas id="graficoFinanceiro" height="100"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const labels = {{ labels_json|safe }};
+    const entradas = {{ entradas_json|safe }};
+    const saidas = {{ saidas_json|safe }};
+
+    const ctx = document.getElementById('graficoFinanceiro').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Entradas',
+                    data: entradas,
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)'
+                },
+                {
+                    label: 'Saídas',
+                    data: saidas,
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: 'Fluxo Financeiro Mensal' }
+            }
+        }
+    });
+</script>
+{% endblock %}

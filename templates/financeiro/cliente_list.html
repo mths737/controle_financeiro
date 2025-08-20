@@ -1,0 +1,36 @@
+{% extends 'financeiro/base.html' %}
+{% block title %}Clientes{% endblock %}
+
+{% block content %}
+
+{% load static %}
+<script src="{% static 'financeiro/scripts/script.js' %}"></script>
+<link href="{% static 'financeiro/css/style.css' %}" rel="stylesheet">
+{% include 'financeiro/cliente_form.html' %}
+
+<div class="d-flex justify-content-between">
+    <h2>Clientes</h2>
+    <button onclick="showDropbox()" class="btn btn-primary mb-3">Novo Cliente</button>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>CPF/CNPJ</th>
+            <th>Telefone</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cliente in clientes %}
+        <tr id="{{ cliente.id }}" onclick="select('{{ cliente.id }}')" class="selected">
+            <td>{{ cliente.nome }}</td>
+            <td>{{ cliente.cpf_cnpj }}</td>
+            <td>{{ cliente.telefone }}</td>
+            <td>{{ cliente.email }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
