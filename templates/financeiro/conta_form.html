@@ -1,10 +1,21 @@
-<div id="dropbox-background">
+<div id="dropbox-background" class="{% if alt_conta %}visible{% else %}hidden{% endif %}">
   <div id="dropbox">
+    {% if alt_conta %}
+    <h2>Alterar Conta</h2>
+    {% else %}
     <h2>Nova Conta</h2>
+    {% endif %}
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <div id="btn-div">
+          {% if alt_conta %}
+          <input name="type" type="hidden" value="alt_conta">
+          <input name="id" type="hidden" value="{{ id }}">
+          {% else %}
+          <input name="type" type="hidden" value="save_conta">
+          {% endif %}
+
           <button type="submit" class="btn btn-success">Salvar</button>
           <a href="{% url 'conta_list' %}" class="btn btn-secondary">Cancelar</a>
         </div>

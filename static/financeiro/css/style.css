@@ -1,3 +1,6 @@
+.hidden { display: none !important;}
+.visible { display: block !important;}
+
 #dropbox-background {
     background-color: rgb(0, 0, 0, 0.5);
     width: 100%;
@@ -9,7 +12,6 @@
     left: 0px;
     bottom: 0px;
     right: 0px;
-    display: none;
     backdrop-filter: blur(4px);
 }
 
@@ -61,8 +63,6 @@ tbody tr:hover {
     cursor:pointer;
 }
 
-.selected:chil {
-    height: 10px;
-    background-color: aqua;
-    color: aqua;
+.selected td {
+    font-weight: bold;
 }

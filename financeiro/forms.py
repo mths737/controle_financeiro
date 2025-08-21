@@ -16,6 +16,6 @@ class ContaForm(forms.ModelForm):
         model = Conta
         fields = '__all__'
         widgets = {
-            'data_vencimento': forms.DateInput(attrs={'type': 'date'}),
-            'data_pagamento': forms.DateInput(attrs={'type': 'date'}),
+            'data_vencimento': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'data_pagamento': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
         }
