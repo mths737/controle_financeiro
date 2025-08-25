@@ -43,21 +43,16 @@ def conta_list(request):
         return render(request, 'financeiro/conta_list.html', {'contas': contas, 'form': form})
     else:
         if request.POST.get("btn"):
+            id = request.POST["id"]
             if request.POST.get("btn") == "edit":
-                id = request.POST["id"]
                 conta = Conta.objects.get(pk=id)
                 form = ContaForm(instance=conta)
                 contas = Conta.objects.select_related('cliente', 'categoria')
             
                 return render(request, 'financeiro/conta_list.html', {'contas': contas, 'form': form, 'alt_conta': True, "id":id})
             elif request.POST.get("btn") == "delete":
-                id = request.POST["id"]
-                conta = Conta.objects.get(pk=id)
-                conta.delete()
-                
                 contas = Conta.objects.select_related('cliente', 'categoria')
-                form = ContaForm()
-                return render(request, 'financeiro/conta_list.html', {'contas': contas, 'form': form})
+                return render(request, 'financeiro/conta_list.html', {'contas': contas, 'delete_conta': True, 'id': id})
         else:
             if request.POST['type'] == "alt_conta":
                 id = request.POST.get("id")  # vem do input hidden no form
@@ -74,6 +69,13 @@ def conta_list(request):
                 if form.is_valid():
                     form.save()
                     return redirect('conta_list')
+            elif request.POST['type'] == "delete_conta":
+                id = request.POST["id"]
+                conta = Conta.objects.get(pk=id)
+                conta.delete()
+                
+                contas = Conta.objects.select_related('cliente', 'categoria')
+                return redirect('conta_list')
 
 
 def marcar_como_pago(request, pk):

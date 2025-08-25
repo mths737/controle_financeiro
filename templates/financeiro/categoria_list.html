@@ -7,24 +7,33 @@
 <script src="{% static 'financeiro/scripts/script.js' %}"></script>
 <link href="{% static 'financeiro/css/style.css' %}" rel="stylesheet">
 {% include 'financeiro/categoria_form.html' %}
+<div id="content">
+    <div id="header"  class="d-flex justify-content-between">
+        <h2>Categorias</h2>
+        <button onclick="showDropbox()" class="btn btn-primary">Nova Categoria</button>
+    </div>
 
-<div class="d-flex justify-content-between">
-    <h2>Categorias</h2>
-    <button onclick="showDropbox()" class="btn btn-primary mb-3">Nova Categoria</button>
+    <div id="table">
+        <div id="thead" >
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div id="tbody">
+            <table class="table table-striped">
+                <tbody>
+                    {% for categoria in categorias %}
+                    <tr id="{{ categoria.id }}" onclick="select('{{ categoria.id }}')">
+                        <td>{{ categoria.nome }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Nome</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for categoria in categorias %}
-        <tr id="{{ categoria.id }}" onclick="select('{{ categoria.id }}')" class="selected">
-            <td>{{ categoria.nome }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
 {% endblock %}

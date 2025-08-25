@@ -8,29 +8,39 @@
 <link href="{% static 'financeiro/css/style.css' %}" rel="stylesheet">
 {% include 'financeiro/cliente_form.html' %}
 
-<div class="d-flex justify-content-between">
-    <h2>Clientes</h2>
-    <button onclick="showDropbox()" class="btn btn-primary mb-3">Novo Cliente</button>
-</div>
+<div id="content">
+    <div  id="header" class="d-flex justify-content-between">
+        <h2>Clientes</h2>
+        <button onclick="showDropbox()" class="btn btn-primary">Novo Cliente</button>
+    </div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Nome</th>
-            <th>CPF/CNPJ</th>
-            <th>Telefone</th>
-            <th>Email</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for cliente in clientes %}
-        <tr id="{{ cliente.id }}" onclick="select('{{ cliente.id }}')" class="selected">
-            <td>{{ cliente.nome }}</td>
-            <td>{{ cliente.cpf_cnpj }}</td>
-            <td>{{ cliente.telefone }}</td>
-            <td>{{ cliente.email }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <div id="table">
+        <div id="thead">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>CPF/CNPJ</th>
+                        <th>Telefone</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div id="tbody">
+            <table class="table table-striped">
+                <tbody>
+                    {% for cliente in clientes %}
+                    <tr id="{{ cliente.id }}" onclick="select('{{ cliente.id }}')">
+                        <td>{{ cliente.nome }}</td>
+                        <td>{{ cliente.cpf_cnpj }}</td>
+                        <td>{{ cliente.telefone }}</td>
+                        <td>{{ cliente.email }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}
