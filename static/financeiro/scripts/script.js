@@ -19,8 +19,10 @@ function select(id) {
 
 function pagar(id) {
     const div = document.getElementById("pagar-"+id);
+    div.style = "animation-name: form; animation-time: 1s;"
 
     div.innerHTML = `
+        <div class="pagar">
             <div style="width: 100%;">
                 <input type="date" name="data_pagamento" required>
             </div>
@@ -36,6 +38,7 @@ function pagar(id) {
                     </svg>
                 </button>
             </div>
+        </div>
     `;
 }
 

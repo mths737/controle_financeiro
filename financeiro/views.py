@@ -1,13 +1,18 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Cliente, Categoria, Conta
-from .forms import ClienteForm, CategoriaForm, ContaForm
 from django.db.models import Sum
 from django.utils import timezone
-from datetime import date
-from collections import defaultdict
+from django.utils.formats import localize
 from django.db.models.functions import TruncMonth
-import json
+
+from datetime import date
 from decimal import Decimal
+from collections import defaultdict
+
+from .forms import ClienteForm, CategoriaForm, ContaForm
+from .models import Cliente, Categoria, Conta
+
+import json
+import locale
 
 def home(request):
     return render(request, 'financeiro/base.html')
@@ -40,6 +45,9 @@ def conta_list(request):
     if request.method == 'GET':
         form = ContaForm()
         contas = Conta.objects.select_related('cliente', 'categoria')
+        for conta in contas:
+            locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+            conta.valor = locale.currency(conta.valor, grouping=True, symbol="R$")
         return render(request, 'financeiro/conta_list.html', {'contas': contas, 'form': form})
     else:
         if request.POST.get("btn"):

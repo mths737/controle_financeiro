@@ -43,7 +43,7 @@
             </table>
         </div>
         <div id="tbody" >
-            <table class="table table-striped">
+            <table class="table">
                 <colgroup>
                     <col style="width: 8%;">
                     <col style="width: 27%;">
@@ -56,14 +56,16 @@
                 <tbody>
                     {% for conta in contas %}
                     <tr id="{{ conta.id }}" onclick="select('{{ conta.id }}')">
-                        <td>{{ conta.get_tipo_display }}</td>
-                        <td>{{ conta.cliente }}</td>
-                        <td>{{ conta.categoria }}</td>
-                        <td>R$ {{ conta.valor }}</td>
-                        <td>{{ conta.data_vencimento|date:"d/m/Y" }}</td>
+                        <td><p>{{ conta.get_tipo_display }}</p></td>
+                        <td><p>{{ conta.cliente }}</p></td>
+                        <td><p>{{ conta.categoria }}</p></td>
+                        <td><p>{{ conta.valor }}</p></td>
+                        <td><p>{{ conta.data_vencimento|date:"d/m/Y" }}</p></td>
                         <td>
                             {% if conta.data_pagamento %}
+                            <p>
                                 {{ conta.data_pagamento|date:"d/m/Y" }}
+                            </p>
                             {% else %}
                                 <form method="post" action="{% url 'marcar_como_pago' conta.pk %}">
                                     {% csrf_token %}
