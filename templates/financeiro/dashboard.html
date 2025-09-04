@@ -39,26 +39,34 @@
     </div>
 
     <h4>Resumo Mensal</h4>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Mês</th>
-                <th>Entradas</th>
-                <th>Saídas</th>
-                <th>Saldo</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in resumo_mensal %}
-            <tr>
-                <td>{{ item.mes }}</td>
-                <td>R$ {{ item.entrada|floatformat:2 }}</td>
-                <td>R$ {{ item.saida|floatformat:2 }}</td>
-                <td>R$ {{ item.saldo|floatformat:2 }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div id="table">
+        <div id="thead">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Mês</th>
+                        <th>Entradas</th>
+                        <th>Saídas</th>
+                        <th>Saldo</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div id="tbody">
+            <table class="table table-bordered">
+                <tbody>
+                    {% for item in resumo_mensal %}
+                    <tr>
+                        <td><p>{{ item.mes }}</p></td>
+                        <td><p>R$ {{ item.entrada|floatformat:2 }}</p></td>
+                        <td><p>R$ {{ item.saida|floatformat:2 }}</p></td>
+                        <td><p>R$ {{ item.saldo|floatformat:2 }}</p></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
     <h4 class="mt-5">Gráfico de Entradas e Saídas</h4>
     <canvas id="graficoFinanceiro" height="100"></canvas>

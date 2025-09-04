@@ -11,6 +11,7 @@ from collections import defaultdict
 
 from .forms import ClienteForm, CategoriaForm, ContaForm
 from .models import Cliente, Categoria, Conta
+from .filters import ContaFilter
 
 import json
 import locale
@@ -144,10 +145,11 @@ def conta_list(request):
     if request.method == 'GET':
         form = ContaForm()
         contas = Conta.objects.select_related('cliente', 'categoria')
+        conta_filter = ContaFilter(request.GET, queryset=contas)
         for conta in contas:
             locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
             conta.valor = locale.currency(conta.valor, grouping=True, symbol="R$")
-        return render(request, 'financeiro/conta_list.html', {'contas': contas, 'form': form})
+        return render(request, 'financeiro/conta_list.html', {'contas': contas, 'form': form, 'filter': conta_filter})
     else:
         if request.POST.get("btn"):
             id = request.POST["id"]

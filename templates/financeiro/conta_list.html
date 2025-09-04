@@ -17,6 +17,17 @@
         <h2>Contas</h2>
         <button onclick="showDropbox()" class="btn btn-primary">Nova Conta</button>
     </div>
+    <form method="get">
+        <div class="row">
+            {% for field in filter.form %}
+                <div class="col-md-3">
+                    <label>{{ field.label }}</label>
+                    {{ field }}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary mt-2">Filtrar</button>
+        </div>
+    </form>
 
     <div id="table">
         <div id="thead" >
@@ -55,7 +66,7 @@
                     <col style="width: 8%;">
                 </colgroup>
                 <tbody>
-                    {% for conta in contas %}
+                    {% for conta in filter.qs %}
                     <tr id="{{ conta.id }}" onclick="select('{{ conta.id }}')">
                         <td><p>{{ conta.get_tipo_display }}</p></td>
                         <td><p>{{ conta.cliente }}</p></td>
@@ -99,10 +110,15 @@
                             </form>
                         </td>
                     </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">Nenhum resultado encontrado.</td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
 {% endblock %}

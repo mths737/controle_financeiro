@@ -48,3 +48,23 @@ function cancelar(id) {
   div.innerHTML =
     '<button style="padding: 0.2rem;" class="btn btn-primary btn-sm" onclick="pagar(' + id +')">Pagar</button>';
 }
+
+window.addEventListener('DOMContentLoaded', function () {
+    // Por ID padrão do Django: id_<nome_do_campo>
+    var cpfInput = document.getElementById('id_cpf_cnpj');
+    var telInput = document.getElementById('id_telefone');
+
+    if (cpfInput) {
+      Inputmask({
+        mask: ["999.999.999-99", "99.999.999/9999-99"],
+        keepStatic: true
+      }).mask(cpfInput);
+    }
+
+    if (telInput) {
+      Inputmask({
+        mask: ["(99) 9999-9999", "(99) 9 9999-9999"],
+        keepStatic: true
+      }).mask(telInput);
+    }
+});
