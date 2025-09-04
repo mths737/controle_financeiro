@@ -4,6 +4,7 @@ from .models import Cliente, Categoria, Conta
 class ClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente
+        exclude = ['ativo']
         fields = '__all__'
 
 class CategoriaForm(forms.ModelForm):

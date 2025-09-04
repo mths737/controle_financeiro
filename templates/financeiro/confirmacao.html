@@ -5,10 +5,10 @@
     {% csrf_token %}
     <h3>Confirmar exclusão?</h3>
     <div id="btn-div">
-        <input name="type" type="hidden" value="delete_conta">
+        <input name="type" type="hidden" value="delete">
         <input name="id" type="hidden" value="{{ id }}">
         <button type="submit" class="btn btn-success">Confirmar</button>
-        <a href="{% url 'conta_list' %}" class="btn btn-secondary">Cancelar</a>
+        <a href="" class="btn btn-secondary">Cancelar</a>
     </div>
 </form>
 {% endblock %}

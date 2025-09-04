@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.formats import localize
 from django.db.models.functions import TruncMonth
@@ -17,16 +18,82 @@ import locale
 def home(request):
     return render(request, 'financeiro/base.html')
 
+def formatar_documento(id):
+    id = ''.join(filter(str.isdigit, id))
+    
+    if len(id) == 11:
+        return f"{id[:3]}.{id[3:6]}.{id[6:9]}-{id[9:]}"
+    elif len(id) == 14:
+        return f"{id[:2]}.{id[2:5]}.{id[5:8]}/{id[8:12]}-{id[12:]}"
+    else:
+        return "Número inválido: precisa ter 11 dígitos (CPF) ou 14 dígitos (CNPJ)."
+
+def formatar_telefone(numero: str) -> str:
+    # Remove espaços e caracteres não numéricos
+    numero = ''.join(filter(str.isdigit, numero))
+    
+    if len(numero) == 10:
+        return f"({numero[:2]}) {numero[2:6]}-{numero[6:]}"
+    elif len(numero) == 11:
+        return f"({numero[:2]}) {numero[2:3]} {numero[3:7]}-{numero[7:]}"
+    else:
+        return "Número inválido: precisa ter 10 ou 11 dígitos."
+
 def cliente_list(request):
     if request.method == 'GET':
         form = ClienteForm()
         clientes = Cliente.objects.all()
+        for cliente in clientes:
+            cliente.cpf_cnpj = formatar_documento(cliente.cpf_cnpj)
+            cliente.telefone = formatar_telefone(cliente.telefone)
         return render(request, 'financeiro/cliente_list.html', {'clientes': clientes, 'form': form})
     else:
+        if request.POST.get("btn"):
+            id = request.POST["id"]
+            if request.POST.get("btn") == "edit":
+                cliente = Cliente.objects.get(pk=id)
+                form = ClienteForm(instance=cliente)
+                clientes = Cliente.objects.all()
+                for cliente in clientes:
+                    cliente.cpf_cnpj = formatar_documento(cliente.cpf_cnpj)
+                    cliente.telefone = formatar_telefone(cliente.telefone)
+                return render(request, 'financeiro/cliente_list.html', {'clientes': clientes, 'form': form, 'alt': True, "id":id})
+            elif request.POST.get("btn") == "delete":
+                clientes = Cliente.objects.all()
+                for cliente in clientes:
+                    cliente.cpf_cnpj = formatar_documento(cliente.cpf_cnpj)
+                    cliente.telefone = formatar_telefone(cliente.telefone)
+                return render(request, 'financeiro/cliente_list.html', {'clientes': clientes, 'delete': True, 'id': id})
+        else:
+            if request.POST['type'] == "alt":
+                id = request.POST.get("id")  # vem do input hidden no form
+                cliente = Cliente.objects.get(pk=id)
+
+                form = ClienteForm(request.POST, instance=cliente)
+                if form.is_valid():
+                    form.save()
+                    return redirect('cliente_list')
+
+            elif request.POST['type'] == "save":
+                form = ClienteForm(request.POST)
+
+                if form.is_valid():
+                    form.save()
+                    return redirect('cliente_list')
+            elif request.POST['type'] == "delete":
+                id = request.POST["id"]
+                cliente = Cliente.objects.get(pk=id)
+                cliente.ativo = False
+                cliente.save()
+                
+                clientes = Conta.objects.all()
+                return redirect('cliente_list')
+        """
         form = ClienteForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('cliente_list')
+        """
 
 
 def categoria_list(request):
@@ -35,10 +102,42 @@ def categoria_list(request):
         categorias = Categoria.objects.all()
         return render(request, 'financeiro/categoria_list.html', {'categorias': categorias, 'form': form})
     else:
-        form = CategoriaForm(request.POST)
+        if request.POST.get("btn"):
+            id = request.POST["id"]
+            if request.POST.get("btn") == "edit":
+                categoria = Categoria.objects.get(pk=id)
+                form = CategoriaForm(instance=categoria)
+                categorias = Categoria.objects.all()
+                return render(request, 'financeiro/categoria_list.html', {'categorias': categorias, 'form': form, 'alt': True, "id":id})
+            elif request.POST.get("btn") == "delete":
+                categorias = Categoria.objects.all()
+                return render(request, 'financeiro/categoria_list.html', {'categorias': categorias, 'delete': True, 'id': id})
+        else:
+            if request.POST['type'] == "alt":
+                id = request.POST.get("id")  # vem do input hidden no form
+                categoria = Categoria.objects.get(pk=id)
+
+                form = CategoriaForm(request.POST, instance=categoria)
+                if form.is_valid():
+                    form.save()
+                    return redirect('categoria_list')
+
+            elif request.POST['type'] == "save":
+                form = CategoriaForm(request.POST)
+
+                if form.is_valid():
+                    form.save()
+                    return redirect('categoria_list')
+            elif request.POST['type'] == "delete":
+                id = request.POST["id"]
+                categoria = Categoria.objects.get(pk=id)
+                
+                categorias = Categoria.objects.all()
+                return redirect('categoria_list')
+        """form = CategoriaForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('categoria_list')
+            return redirect('categoria_list')"""
 
 
 def conta_list(request):
@@ -56,28 +155,40 @@ def conta_list(request):
                 conta = Conta.objects.get(pk=id)
                 form = ContaForm(instance=conta)
                 contas = Conta.objects.select_related('cliente', 'categoria')
+                for conta in contas:
+                    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+                    conta.valor = locale.currency(conta.valor, grouping=True, symbol="R$")
             
-                return render(request, 'financeiro/conta_list.html', {'contas': contas, 'form': form, 'alt_conta': True, "id":id})
+                return render(request, 'financeiro/conta_list.html', {'contas': contas, 'form': form, 'alt': True, "id":id})
             elif request.POST.get("btn") == "delete":
                 contas = Conta.objects.select_related('cliente', 'categoria')
-                return render(request, 'financeiro/conta_list.html', {'contas': contas, 'delete_conta': True, 'id': id})
+                for conta in contas:
+                    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+                    conta.valor = locale.currency(conta.valor, grouping=True, symbol="R$")
+                return render(request, 'financeiro/conta_list.html', {'contas': contas, 'delete': True, 'id': id})
+                
         else:
-            if request.POST['type'] == "alt_conta":
+            if request.POST['type'] == "alt":
                 id = request.POST.get("id")  # vem do input hidden no form
-                conta = Conta.objects.get(pk=id)
+                try:
+                    conta = Conta.objects.get(pk=id)  # busca conta existente
+                except Conta.DoesNotExist:
+                    conta = None  # se não existir, pode criar
+
+                form = ContaForm(request.POST, instance=conta)
 
                 form = ContaForm(request.POST, instance=conta)
                 if form.is_valid():
                     form.save()
                     return redirect('conta_list')
 
-            elif request.POST['type'] == "save_conta":
+            elif request.POST['type'] == "save":
                 form = ContaForm(request.POST)
 
                 if form.is_valid():
                     form.save()
                     return redirect('conta_list')
-            elif request.POST['type'] == "delete_conta":
+            elif request.POST['type'] == "delete":
                 id = request.POST["id"]
                 conta = Conta.objects.get(pk=id)
                 conta.delete()

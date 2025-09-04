@@ -1,13 +1,23 @@
-<div id="dropbox-background" class="hidden">
-  <div id="dropbox">
-    <h2>Novo Cliente</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <div id="btn-div">
-          <button type="submit" class="btn btn-success">Salvar</button>
-          <a href="{% url 'cliente_list' %}" class="btn btn-secondary">Cancelar</a>
-        </div>
-    </form>
-  </div>
-</div>
+{% extends 'financeiro/dropbox.html' %}
+
+{% block dropbox-form %}
+{% if alt %}
+<h2>Alterar Cliente</h2> 
+{% else %}
+<h2>Novo Cliente</h2>
+{% endif %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div id="btn-div">
+      {% if alt %}
+      <input name="type" type="hidden" value="alt">
+      <input name="id" type="hidden" value="{{ id }}">
+      {% else %}
+      <input name="type" type="hidden" value="save">
+      {% endif %}
+      <button type="submit" class="btn btn-success">Salvar</button>
+      <a href="" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
+{% endblock %}
