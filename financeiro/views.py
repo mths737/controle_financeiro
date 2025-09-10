@@ -144,30 +144,56 @@ def categoria_list(request):
 def conta_list(request):
     if request.method == 'GET':
         form = ContaForm()
-        contas = Conta.objects.select_related('cliente', 'categoria')
+        contas = Conta.objects.select_related('cliente', 'categoria').order_by("data_vencimento")
         conta_filter = ContaFilter(request.GET, queryset=contas)
         for conta in contas:
             locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
             conta.valor = locale.currency(conta.valor, grouping=True, symbol="R$")
         return render(request, 'financeiro/conta_list.html', {'contas': contas, 'form': form, 'filter': conta_filter})
     else:
-        if request.POST.get("btn"):
+        if request.POST.get("btn_order"):
+            order = "cre"
+            contas = Conta.objects.select_related('cliente', 'categoria')
+            if request.POST.get("btn_order") == request.POST.get("order_by"):
+
+                if request.POST.get("order") == "dec":
+                    contas = Conta.objects.select_related('cliente', 'categoria').order_by(request.POST.get("btn_order"))
+                    order = "cre"
+                elif request.POST.get("order") == "cre":
+                    contas = Conta.objects.select_related('cliente', 'categoria').order_by(request.POST.get("btn_order")).reverse()
+                    order = "dec"
+            else:
+                order = "cre"
+                contas = Conta.objects.select_related('cliente', 'categoria').order_by(request.POST.get("btn_order"))
+            
+            conta_filter = ContaFilter(request.GET, queryset=contas)
+            form = ContaForm()
+            order_by = request.POST.get("btn_order")
+            
+            for conta in contas:
+                locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+                conta.valor = locale.currency(conta.valor, grouping=True, symbol="R$")
+        
+            return render(request, 'financeiro/conta_list.html', {'contas': contas, 'form': form, 'filter': conta_filter, "order_by" : order_by, "order": order})
+        elif request.POST.get("btn"):
             id = request.POST["id"]
             if request.POST.get("btn") == "edit":
                 conta = Conta.objects.get(pk=id)
                 form = ContaForm(instance=conta)
                 contas = Conta.objects.select_related('cliente', 'categoria')
+                conta_filter = ContaFilter(request.GET, queryset=contas)
                 for conta in contas:
                     locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
                     conta.valor = locale.currency(conta.valor, grouping=True, symbol="R$")
             
-                return render(request, 'financeiro/conta_list.html', {'contas': contas, 'form': form, 'alt': True, "id":id})
+                return render(request, 'financeiro/conta_list.html', {'contas': contas, 'form': form, 'alt': True, "id":id, 'filter': conta_filter})
             elif request.POST.get("btn") == "delete":
                 contas = Conta.objects.select_related('cliente', 'categoria')
+                conta_filter = ContaFilter(request.GET, queryset=contas)
                 for conta in contas:
                     locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
                     conta.valor = locale.currency(conta.valor, grouping=True, symbol="R$")
-                return render(request, 'financeiro/conta_list.html', {'contas': contas, 'delete': True, 'id': id})
+                return render(request, 'financeiro/conta_list.html', {'contas': contas, 'delete': True, 'id': id, 'filter': conta_filter})
                 
         else:
             if request.POST['type'] == "alt":
@@ -176,8 +202,6 @@ def conta_list(request):
                     conta = Conta.objects.get(pk=id)  # busca conta existente
                 except Conta.DoesNotExist:
                     conta = None  # se não existir, pode criar
-
-                form = ContaForm(request.POST, instance=conta)
 
                 form = ContaForm(request.POST, instance=conta)
                 if form.is_valid():
