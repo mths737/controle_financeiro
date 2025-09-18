@@ -144,7 +144,7 @@ def categoria_list(request):
 def conta_list(request):
     if request.method == 'GET':
         form = ContaForm()
-        contas = Conta.objects.select_related('cliente', 'categoria').order_by("data_vencimento")
+        contas = Conta.objects.select_related('cliente', 'categoria').order_by("data_vencimento")        
         conta_filter = ContaFilter(request.GET, queryset=contas)
         for conta in contas:
             locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
@@ -154,18 +154,20 @@ def conta_list(request):
         if request.POST.get("btn_order"):
             order = "cre"
             contas = Conta.objects.select_related('cliente', 'categoria')
-            if request.POST.get("btn_order") == request.POST.get("order_by"):
-
-                if request.POST.get("order") == "dec":
-                    contas = Conta.objects.select_related('cliente', 'categoria').order_by(request.POST.get("btn_order"))
-                    order = "cre"
-                elif request.POST.get("order") == "cre":
-                    contas = Conta.objects.select_related('cliente', 'categoria').order_by(request.POST.get("btn_order")).reverse()
-                    order = "dec"
+            if request.POST.get("btn_order") == "status":
+                pass
             else:
-                order = "cre"
-                contas = Conta.objects.select_related('cliente', 'categoria').order_by(request.POST.get("btn_order"))
-            
+                if request.POST.get("btn_order") == request.POST.get("order_by"):
+                    if request.POST.get("order") == "dec":
+                        contas = Conta.objects.select_related('cliente', 'categoria').order_by(request.POST.get("btn_order"))
+                        order = "cre"
+                    elif request.POST.get("order") == "cre":
+                        contas = Conta.objects.select_related('cliente', 'categoria').order_by(request.POST.get("btn_order")).reverse()
+                        order = "dec"
+                else:
+                    order = "cre"
+                    contas = Conta.objects.select_related('cliente', 'categoria').order_by(request.POST.get("btn_order"))
+                
             conta_filter = ContaFilter(request.GET, queryset=contas)
             form = ContaForm()
             order_by = request.POST.get("btn_order")

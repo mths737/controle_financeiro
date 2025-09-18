@@ -8,10 +8,22 @@ function showDropbox() {
 
 function select(id) {
     let lines = document.getElementsByTagName('tr')
+    let id_conta = document.getElementById("id-conta")
+    let form_acao = document.getElementById("form-acao")
     for (line in lines) {
         if (lines[line].id == id) {
-            lines[line].className = "selected"
-        } else {
+            if (lines[line].className == "selected") {
+                lines[line].className = ""
+                id_conta.value = ""
+                form_acao.style.display = 'none'
+            }
+            else {
+                lines[line].className = "selected"
+                id_conta.value = id
+                form_acao.style.display = 'block'
+            }
+        }
+        else {
             lines[line].className = ""
         }
     }

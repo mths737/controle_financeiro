@@ -84,7 +84,7 @@ tbody tr:hover {
 }
 
 .selected td {
-
+    background-color: rgb(180, 180, 180) !important;
 }
 
 
@@ -332,4 +332,14 @@ button {
     align-items: center;
     width: 100%;
     height: 8%;
+}
+
+#form-acao {
+    display: none;
+    animation-name: form;
+    animation-duration: 1s;
+}
+
+#form-acao form {
+    display: flex;
 }
