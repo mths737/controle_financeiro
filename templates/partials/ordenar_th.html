@@ -1,0 +1,20 @@
+{% load static %}
+<link href="{% static 'financeiro/css/style.css' %}" rel="stylesheet">
+
+<th>
+    <form method="post" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="order_by" value="{{ order_by }}">
+        <input type="hidden" name="order" value="{{ order }}">
+        <button type="submit" name="btn_order" value="{{ field }}">
+            {{ label }}
+            {% if order_by == field %}
+                {% if order == "cre" %}
+                    <i class="bi bi-caret-up-fill"></i>
+                {% else %}
+                    <i class="bi bi-caret-down-fill"></i>
+                {% endif %}
+            {% endif %}
+        </button>
+    </form>
+</th>

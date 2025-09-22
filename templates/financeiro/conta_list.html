@@ -66,62 +66,15 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>
-                            <form method="post">
-                                {% csrf_token %}
-                                    <input type="hidden" name="order_by" value="{{ order_by }}">
-                                    <input type="hidden" name="order" value="{{ order }}">
-                                    <button name="btn_order" value="tipo">Tipo</button>
-                            </form>
-                        </th>
-                        <th>
-                            <form method="post">
-                                {% csrf_token %}
-                                    <input type="hidden" name="order_by" value="{{ order_by }}">
-                                    <input type="hidden" name="order" value="{{ order }}">
-                                    <button name="btn_order" value="cliente">Cliente</button>
-                            </form>
-                        </th>
-                        <th>
-                            <form method="post">
-                                {% csrf_token %}
-                                    <input type="hidden" name="order_by" value="{{ order_by }}">
-                                    <input type="hidden" name="order" value="{{ order }}">
-                                    <button name="btn_order" value="categoria">Categoria</button>
-                            </form>
-                        </th>
-                        <th>
-                            <form method="post">
-                                {% csrf_token %}
-                                    <input type="hidden" name="order_by" value="{{ order_by }}">
-                                    <input type="hidden" name="order" value="{{ order }}">
-                                    <button name="btn_order" value="valor">Valor</button>
-                            </form>
-                        </th>
-                        <th>
-                            <form method="post">
-                                {% csrf_token %}
-                                    <input type="hidden" name="order_by" value="{{ order_by }}">
-                                    <input type="hidden" name="order" value="{{ order }}">
-                                    <button name="btn_order" value="data_vencimento">Vencimento</button>
-                            </form>
-                        </th>
-                        <th>
-                            <form method="post">
-                                {% csrf_token %}
-                                    <input type="hidden" name="order_by" value="{{ order_by }}">
-                                    <input type="hidden" name="order" value="{{ order }}">
-                                    <button name="btn_order" value="data_pagamento">Pagamento</button>
-                            </form>
-                        </th>
-                        <th>
-                            <form method="post">
-                                {% csrf_token %}
-                                    <input type="hidden" name="order_by" value="{{ order_by }}">
-                                    <input type="hidden" name="order" value="{{ order }}">
-                                    <button name="btn_order" value="status">Status</button>
-                            </form>
-                        </th>
+                        {% load financeiro_extras %}
+                        {% ordenar_th "Tipo" "tipo" order_by order %}
+                        {% ordenar_th "Cliente" "cliente" order_by order %}
+                        {% ordenar_th "Categoria" "categoria" order_by order %}
+                        {% ordenar_th "Valor" "valor" order_by order %}
+                        {% ordenar_th "Vencimento" "data_vencimento" order_by order %}
+                        {% ordenar_th "Pagamento" "data_pagamento" order_by order %}
+                        {% ordenar_th "Status" "status" order_by order %}
+                        
                     </tr>
                 </thead>
             </table>

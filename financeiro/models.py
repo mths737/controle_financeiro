@@ -1,3 +1,4 @@
+from datetime import date
 from django.db import models
 
 class Cliente(models.Model):
@@ -31,7 +32,13 @@ class Conta(models.Model):
 
     @property
     def status(self):
-        return 'Pago' if self.data_pagamento else 'Pendente'
+        today = date.today()
+        if self.data_pagamento:
+            return "Pago"
+        elif self.data_vencimento < today:
+            return "Atrasado"
+        else:
+            return "Pendente"
 
     def __str__(self):
         return f'{self.get_tipo_display()} - {self.cliente.nome}'

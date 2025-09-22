@@ -4,8 +4,9 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.formats import localize
 from django.db.models.functions import TruncMonth
+from django.db.models import Case, When, Value, IntegerField
 
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from collections import defaultdict
 
@@ -39,6 +40,18 @@ def formatar_telefone(numero: str) -> str:
         return f"({numero[:2]}) {numero[2:3]} {numero[3:7]}-{numero[7:]}"
     else:
         return "Número inválido: precisa ter 10 ou 11 dígitos."
+    
+def get_contas():
+    contas = Conta.objects.select_related('cliente', 'categoria')
+    today = date.today()
+    for conta in contas:
+        if conta.data_pagamento:
+            conta.status_calc = 'Pago'
+        elif conta.data_vencimento < today:
+            conta.status_calc = 'Atrasado'
+        else:
+            conta.status_calc = 'Pendente'
+    return contas
 
 def cliente_list(request):
     if request.method == 'GET':
@@ -144,7 +157,7 @@ def categoria_list(request):
 def conta_list(request):
     if request.method == 'GET':
         form = ContaForm()
-        contas = Conta.objects.select_related('cliente', 'categoria').order_by("data_vencimento")        
+        contas = get_contas().order_by("data_vencimento")        
         conta_filter = ContaFilter(request.GET, queryset=contas)
         for conta in contas:
             locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
@@ -152,31 +165,60 @@ def conta_list(request):
         return render(request, 'financeiro/conta_list.html', {'contas': contas, 'form': form, 'filter': conta_filter})
     else:
         if request.POST.get("btn_order"):
-            order = "cre"
-            contas = Conta.objects.select_related('cliente', 'categoria')
-            if request.POST.get("btn_order") == "status":
-                pass
+            btn_order = request.POST.get("btn_order")
+            current_order_by = request.POST.get("order_by")
+            current_order = request.POST.get("order", "cre")
+
+            contas_qs = Conta.objects.select_related('cliente', 'categoria').all()
+
+            # toggle da direção (cre -> dec -> cre)
+            if btn_order == current_order_by:
+                new_order = "dec" if current_order == "cre" else "cre"
             else:
-                if request.POST.get("btn_order") == request.POST.get("order_by"):
-                    if request.POST.get("order") == "dec":
-                        contas = Conta.objects.select_related('cliente', 'categoria').order_by(request.POST.get("btn_order"))
-                        order = "cre"
-                    elif request.POST.get("order") == "cre":
-                        contas = Conta.objects.select_related('cliente', 'categoria').order_by(request.POST.get("btn_order")).reverse()
-                        order = "dec"
-                else:
-                    order = "cre"
-                    contas = Conta.objects.select_related('cliente', 'categoria').order_by(request.POST.get("btn_order"))
-                
+                new_order = "cre"
+
+            if btn_order == "status":
+                today = date.today()
+                contas_qs = contas_qs.annotate(
+                    status_order=Case(
+                        When(data_pagamento__isnull=False, then=Value(1)),   # Pago
+                        When(data_vencimento__lt=today, then=Value(3)),     # Atrasado
+                        default=Value(2),                                   # Pendente
+                        output_field=IntegerField(),
+                    )
+                )
+                order_field = "status_order"
+            else:
+                # mapeia nomes amigáveis para campos do banco
+                order_fields_map = {
+                    "tipo": "tipo",
+                    "cliente": "cliente__nome",
+                    "categoria": "categoria__nome",
+                    "valor": "valor",
+                    "data_vencimento": "data_vencimento",
+                    "data_pagamento": "data_pagamento",
+                }
+                order_field = order_fields_map.get(btn_order, "data_vencimento")
+
+            if new_order == "cre":
+                contas = contas_qs.order_by(order_field)
+            else:
+                contas = contas_qs.order_by(f"-{order_field}")
+
             conta_filter = ContaFilter(request.GET, queryset=contas)
             form = ContaForm()
-            order_by = request.POST.get("btn_order")
-            
+
             for conta in contas:
                 locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
                 conta.valor = locale.currency(conta.valor, grouping=True, symbol="R$")
-        
-            return render(request, 'financeiro/conta_list.html', {'contas': contas, 'form': form, 'filter': conta_filter, "order_by" : order_by, "order": order})
+
+            return render(request, 'financeiro/conta_list.html', {
+                'contas': contas,
+                'form': form,
+                'filter': conta_filter,
+                'order_by': btn_order,
+                'order': new_order,
+            })
         elif request.POST.get("btn"):
             id = request.POST["id"]
             if request.POST.get("btn") == "edit":
