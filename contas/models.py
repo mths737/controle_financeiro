@@ -1,4 +1,5 @@
 from datetime import date
+import locale
 from django.db import models
 from clientes.models import Cliente
 from categorias.models import Categoria
@@ -25,6 +26,12 @@ class Conta(models.Model):
             return "Atrasado"
         else:
             return "Pendente"
+        
+    
+    @property
+    def valor_formatado(self):
+        locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+        return locale.currency(self.valor, grouping=True, symbol="R$")
 
     def __str__(self):
         return f'{self.get_tipo_display()} - {self.cliente.nome}'

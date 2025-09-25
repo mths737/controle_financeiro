@@ -8,18 +8,18 @@ function showDropbox() {
 
 function select(id) {
     let lines = document.getElementsByTagName('tr')
-    let id_conta = document.getElementById("id-conta")
+    let id_reg = document.getElementById("id-reg")
     let form_acao = document.getElementById("form-acao")
     for (line in lines) {
         if (lines[line].id == id) {
             if (lines[line].className == "selected") {
                 lines[line].className = ""
-                id_conta.value = ""
+                id_reg.value = ""
                 form_acao.style.display = 'none'
             }
             else {
                 lines[line].className = "selected"
-                id_conta.value = id
+                id_reg.value = id
                 form_acao.style.display = 'block'
             }
         }
@@ -81,3 +81,50 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+  const container = document.getElementById('notifications-container');
+  if (!container) return;
+
+  const notifications = Array.from(container.querySelectorAll('.notification'));
+
+  notifications.forEach(notif => {
+    const DURATION = parseInt(notif.dataset.duration, 10) || 4000;
+
+    // função genérica de esconder
+    const hideNotification = () => {
+      const onTransitionEnd = (ev) => {
+        if (ev.propertyName === 'opacity') {
+          notif.removeEventListener('transitionend', onTransitionEnd);
+          if (notif.parentNode) notif.parentNode.removeChild(notif);
+        }
+      };
+
+      notif.addEventListener('transitionend', onTransitionEnd);
+
+      requestAnimationFrame(() => {
+        notif.classList.remove('show');
+        notif.classList.add('hide');
+      });
+
+      setTimeout(() => {
+        if (notif.parentNode) notif.parentNode.removeChild(notif);
+      }, 700);
+    };
+
+    // Anima a entrada
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        notif.classList.add('show');
+      });
+    });
+
+    // Timer de saída automática
+    setTimeout(hideNotification, DURATION);
+
+    // Clique no botão X para fechar antes
+    const closeBtn = notif.querySelector('button');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', hideNotification);
+    }
+  });
+});

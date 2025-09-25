@@ -1,0 +1,38 @@
+<div class="d-flex justify-content-between mb-2">
+  <form method="get" class="d-flex">
+    {{ filter.form.search }}
+    <button type="submit" class="btn btn-primary ms-2">
+      <i class="bi bi-search"></i>
+    </button>
+  </form>
+  <button class="btn btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#filtrosOffcanvas">
+    <i class="bi bi-funnel"></i> Filtros Avançados
+  </button>
+</div>
+<div class="offcanvas offcanvas-end" tabindex="-1" id="filtrosOffcanvas">
+  <div class="offcanvas-header">
+    <h5>Filtros</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <form method="get">
+      <div class="mb-3">
+        <label>Data inicial</label>
+        {{ filter.form.data_inicio }}
+      </div>
+      <div class="mb-3">
+        <label>Data final</label>
+        {{ filter.form.data_fim }}
+      </div>
+      <div class="mb-3">
+        <label>Valor mínimo</label>
+        {{ filter.form.valor_min }}
+      </div>
+      <div class="mb-3">
+        <label>Valor máximo</label>
+        {{ filter.form.valor_max }}
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+    </form>
+  </div>
+</div>

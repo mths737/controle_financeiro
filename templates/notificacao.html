@@ -1,15 +1,8 @@
-{% if messages %}
-    <div id="div-notificacao">
-        <div id="div-notificacao-header">
-            <h3>Notificações</h3>
-            <button><i class="bi bi-x"></i></button>
-        </div>
-        <ul class="messages">
-            {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
-                    {{ message }}
-                </li>
-            {% endfor %}
-        </ul>
+<div id="notifications-container">
+    {% for message in messages %}
+    <div class="notification {{ message.tags|default:'success' }}" data-duration="4000">
+        {{ message|escape }}
+        <button><i class="bi bi-x"></i></button>
     </div>
-{% endif %}
+  {% endfor %}
+</div>

@@ -1,155 +1,85 @@
-{% extends 'base.html' %}
+{% extends 'content_base.html' %}
 {% block title %}Contas{% endblock %}
 
-{% block content %}
+{% block form %}
+    {% include 'contas/conta_form.html' %}
+{% endblock %}
 
-{% load static %}
-<script src="{% static 'financeiro/scripts/script.js' %}"></script>
-<link href="{% static 'financeiro/css/style.css' %}" rel="stylesheet">
-{% if delete %}
-{% include 'confirmacao.html' %}
-{% else %}
-{% include 'contas/conta_form.html' %}
-{% endif %}
+{% block filter %}
+    {% include 'contas_filter.html' %}
+{% endblock %}
 
-{% include 'notificacao.html' %}
+{% block table %}
 
-<div id="content">
-    <div id="header" class="d-flex justify-content-between">
-        <h2>Contas</h2>
-        <div id="filter">
-            <div id="span" class=""><p></p></div>
-            <form method="get" class="mb-3">
-                <div class="row">
-                    <div class="col-md-2">
-                        <label>Buscar</label>
-                        {{ filter.form.search }}
-                    </div>
-
-                    <div id="span" class=""><p></p></div>
-        
-                    <div class="col-md-2">
-                        <label>Data inicial</label>
-                        {{ filter.form.data_inicio }}
-                    </div>
-                    <div class="col-md-2">
-                        <label>Data final</label>
-                        {{ filter.form.data_fim }}
-                    </div>
-
-                    <div id="span" class=""><p></p></div>
-        
-                    <div class="col-md-2">
-                        <label>Valor mínimo</label>
-                        {{ filter.form.valor_min }}
-                    </div>
-                    <div class="col-md-2">
-                        <label>Valor máximo</label>
-                        {{ filter.form.valor_max }}
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary mt-2">Filtrar</button>
-            </form>
-        </div>
+<div id="table">
+    <div id="thead" >
+        <table class="table">
+            <colgroup>
+                <col style="width: 8%;">
+                <col style="width: 27%;">
+                <col style="width: 14%;">
+                <col style="width: 13%;">
+                <col style="width: 13%;">
+                <col style="width: 17%;">
+                <col style="width: var(8% - 2px);">
+            </colgroup>
+            <thead>
+                <tr>
+                    {% load contas_extras %}
+                    {% ordenar_th "Tipo" "tipo" order_by order %}
+                    {% ordenar_th "Cliente" "cliente" order_by order %}
+                    {% ordenar_th "Categoria" "categoria" order_by order %}
+                    {% ordenar_th "Valor" "valor" order_by order %}
+                    {% ordenar_th "Vencimento" "data_vencimento" order_by order %}
+                    {% ordenar_th "Pagamento" "data_pagamento" order_by order %}
+                    {% ordenar_th "Status" "status" order_by order %}
+                    
+                </tr>
+            </thead>
+        </table>
     </div>
-
-
-    <div id="table">
-        <div id="thead" >
-            <table class="table">
-                <colgroup>
-                    <col style="width: 8%;">
-                    <col style="width: 27%;">
-                    <col style="width: 14%;">
-                    <col style="width: 13%;">
-                    <col style="width: 13%;">
-                    <col style="width: 17%;">
-                    <col style="width: var(8% - 2px);">
-                </colgroup>
-                <thead>
-                    <tr>
-                        {% load contas_extras %}
-                        {% ordenar_th "Tipo" "tipo" order_by order %}
-                        {% ordenar_th "Cliente" "cliente" order_by order %}
-                        {% ordenar_th "Categoria" "categoria" order_by order %}
-                        {% ordenar_th "Valor" "valor" order_by order %}
-                        {% ordenar_th "Vencimento" "data_vencimento" order_by order %}
-                        {% ordenar_th "Pagamento" "data_pagamento" order_by order %}
-                        {% ordenar_th "Status" "status" order_by order %}
-                        
-                    </tr>
-                </thead>
-            </table>
-        </div>
-        <div id="tbody" >
-            <table class="table">
-                <colgroup>
-                    <col style="width: 8%;">
-                    <col style="width: 27%;">
-                    <col style="width: 14%;">
-                    <col style="width: 13%;">
-                    <col style="width: 13%;">
-                    <col style="width: 17%;">
-                    <col style="width: 8%;">
-                </colgroup>
-                <tbody>
-                    {% for conta in filter.qs %}
-                    <tr id="{{ conta.id }}" onclick="select('{{ conta.id }}')">
-                        <td><p>{{ conta.get_tipo_display }}</p></td>
-                        <td><p>{{ conta.cliente }}</p></td>
-                        <td><p>{{ conta.categoria }}</p></td>
-                        <td><p>{{ conta.valor }}</p></td>
-                        <td><p>{{ conta.data_vencimento|date:"d/m/Y" }}</p></td>
-                        <td>
-                            {% if conta.data_pagamento %}
-                            <p>
-                                {{ conta.data_pagamento|date:"d/m/Y" }}
-                            </p>
-                            {% else %}
-                                <form method="post" action="{% url 'contas:marcar_como_pago' conta.pk %}">
-                                    {% csrf_token %}
-                                    <div id="pagar-{{ conta.id }}">
-                                        <button style="padding: 0.2rem;" onclick="pagar('{{ conta.id }}')" class="btn btn-primary btn-sm">Pagar</button>
-                                    </div>
-                                </form>
-                            {% endif %}
-                        </td>
-                        <td>{{ conta.status }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="7" class="text-center">Nenhum resultado encontrado.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div id="footer">
-        <button onclick="showDropbox()" class="btn btn-primary">Nova Conta</button>
-        <div id="form-acao">
-            <form method="post">
-                {% csrf_token %}
-                <input hidden name="id" id="id-conta">
-                <div>
-                    <button name="btn" value="edit" class="btn btn-secondary btn-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="1.2rem" height="1.2rem" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-                        </svg>
-                    </button>
-                </div>
-                <div>
-                    <button name="btn" value="delete" class="btn btn-danger btn-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="1.2rem" height="1.2rem" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
-                        </svg>
-                    </button>
-                </div>
-            </form>
-        </div>
+    <div id="tbody" >
+        <table class="table">
+            <colgroup>
+                <col style="width: 8%;">
+                <col style="width: 27%;">
+                <col style="width: 14%;">
+                <col style="width: 13%;">
+                <col style="width: 13%;">
+                <col style="width: 17%;">
+                <col style="width: 8%;">
+            </colgroup>
+            <tbody>
+                {% for conta in filter.qs %}
+                <tr id="{{ conta.id }}" onclick="select('{{ conta.id }}')">
+                    <td><p>{{ conta.get_tipo_display }}</p></td>
+                    <td><p>{{ conta.cliente }}</p></td>
+                    <td><p>{{ conta.categoria }}</p></td>
+                    <td><p>{{ conta.valor_formatado }}</p></td>
+                    <td><p>{{ conta.data_vencimento|date:"d/m/Y" }}</p></td>
+                    <td>
+                        {% if conta.data_pagamento %}
+                        <p>
+                            {{ conta.data_pagamento|date:"d/m/Y" }}
+                        </p>
+                        {% else %}
+                            <form method="post" action="{% url 'contas:marcar_como_pago' conta.pk %}">
+                                {% csrf_token %}
+                                <div id="pagar-{{ conta.id }}">
+                                    <button style="padding: 0.2rem;" onclick="pagar('{{ conta.id }}')" class="btn btn-primary btn-sm">Pagar</button>
+                                </div>
+                            </form>
+                        {% endif %}
+                    </td>
+                    <td>{{ conta.status }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center">Nenhum resultado encontrado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
-
 {% endblock %}
