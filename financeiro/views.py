@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.utils.formats import localize
 from django.db.models.functions import TruncMonth
 from django.db.models import Case, When, Value, IntegerField
+from django.contrib import messages
 
 from datetime import date, datetime
 from decimal import Decimal
@@ -241,6 +242,8 @@ def conta_list(request):
                 
         else:
             if request.POST['type'] == "alt":
+                contas = Conta.objects.select_related('cliente', 'categoria')
+                conta_filter = ContaFilter(request.GET, queryset=contas)
                 id = request.POST.get("id")  # vem do input hidden no form
                 try:
                     conta = Conta.objects.get(pk=id)  # busca conta existente
@@ -250,7 +253,8 @@ def conta_list(request):
                 form = ContaForm(request.POST, instance=conta)
                 if form.is_valid():
                     form.save()
-                    return redirect('conta_list')
+                    messages.success(request, "Conta alterada com sucesso!")
+                    return render(request, 'financeiro/conta_list.html', {'contas': contas, 'filter': conta_filter})
 
             elif request.POST['type'] == "save":
                 form = ContaForm(request.POST)
@@ -262,6 +266,7 @@ def conta_list(request):
                 id = request.POST["id"]
                 conta = Conta.objects.get(pk=id)
                 conta.delete()
+                messages.success(request, "Conta excluida com sucesso!")
                 
                 contas = Conta.objects.select_related('cliente', 'categoria')
                 return redirect('conta_list')
