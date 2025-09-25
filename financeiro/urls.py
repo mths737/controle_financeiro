@@ -12,7 +12,7 @@ urlpatterns = [
     path('api/', include(router.urls)),
 ]
 
-urlpatterns += [
+"""urlpatterns += [
     path('clientes/', cliente_list, name='cliente_list'),
 
     path('categorias/', categoria_list, name='categoria_list'),
@@ -22,4 +22,4 @@ urlpatterns += [
 
     path('dashboard/', dashboard, name='dashboard'),
     path('', home),
-]
+]"""
