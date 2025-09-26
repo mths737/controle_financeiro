@@ -1,38 +1,44 @@
-<div class="d-flex justify-content-between mb-2">
-  <form method="get" class="d-flex">
-    {{ filter.form.search }}
-    <button type="submit" class="btn btn-primary ms-2">
+{% load widget_tweaks %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <form method="get" class="d-flex flex-grow-1 me-2">
+    {{ filter.form.search|add_class:"form-control rounded-pill me-2" }}
+    <button type="submit" class="btn btn-primary rounded-pill px-4">
       <i class="bi bi-search"></i>
     </button>
   </form>
-  <button class="btn btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#filtrosOffcanvas">
+  {% if advanced_filter %}
+  <button class="btn btn-outline-secondary rounded-pill" data-bs-toggle="offcanvas" data-bs-target="#filtrosOffcanvas">
     <i class="bi bi-funnel"></i> Filtros Avançados
   </button>
+  {% endif %}
 </div>
-<div class="offcanvas offcanvas-end" tabindex="-1" id="filtrosOffcanvas">
-  <div class="offcanvas-header">
-    <h5>Filtros</h5>
+
+<div id="custom-offcanvas-backdrop" class="custom-backdrop" aria-hidden="true"></div>
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="filtrosOffcanvas" data-bs-backdrop="false" data-bs-scroll="false">
+  <div class="offcanvas-header border-bottom">
+    <h5 class="offcanvas-title fw-bold">Filtros Avançados</h5>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
   </div>
   <div class="offcanvas-body">
-    <form method="get">
-      <div class="mb-3">
-        <label>Data inicial</label>
-        {{ filter.form.data_inicio }}
+    <form method="get" class="d-flex flex-column gap-3">
+      <div>
+        <label class="form-label fw-semibold">Data inicial</label>
+        {{ filter.form.data_inicio|add_class:"form-control rounded" }}
       </div>
-      <div class="mb-3">
-        <label>Data final</label>
-        {{ filter.form.data_fim }}
+      <div>
+        <label class="form-label fw-semibold">Data final</label>
+        {{ filter.form.data_fim|add_class:"form-control rounded" }}
       </div>
-      <div class="mb-3">
-        <label>Valor mínimo</label>
-        {{ filter.form.valor_min }}
+      <div>
+        <label class="form-label fw-semibold">Valor mínimo</label>
+        {{ filter.form.valor_min|add_class:"form-control rounded" }}
       </div>
-      <div class="mb-3">
-        <label>Valor máximo</label>
-        {{ filter.form.valor_max }}
+      <div>
+        <label class="form-label fw-semibold">Valor máximo</label>
+        {{ filter.form.valor_max|add_class:"form-control rounded" }}
       </div>
-      <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+      <button type="submit" class="btn btn-primary w-100 rounded-pill mt-3">Filtrar</button>
     </form>
   </div>
 </div>

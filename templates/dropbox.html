@@ -1,3 +1,6 @@
+{% load static %}
+<link href="{% static 'financeiro/css/dropbox.css' %}" rel="stylesheet">
+
 <div id="dropbox-background" class="{% if alt or delete %}visible{% else %}hidden{% endif %}">
   <div id="dropbox">
     {% block dropbox-form %}

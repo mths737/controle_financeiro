@@ -31,10 +31,14 @@
                 <col style="width: 100%;">
             </colgroup>
             <tbody>
-                {% for categoria in categorias %}
-                <tr id="{{ categoria.id }}" onclick="select('{{ categoria.id }}')">
-                    <td><p>{{ categoria.nome }}</p></td>
-                </tr>
+                {% for categoria in filter.qs %}
+                    <tr id="{{ categoria.id }}" onclick="select('{{ categoria.id }}')">
+                        <td><p>{{ categoria.nome }}</p></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">Nenhum resultado encontrado.</td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>

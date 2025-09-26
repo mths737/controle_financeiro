@@ -7,24 +7,24 @@ function showDropbox() {
 }
 
 function select(id) {
-    let lines = document.getElementsByTagName('tr')
-    let id_reg = document.getElementById("id-reg")
-    let form_acao = document.getElementById("form-acao")
-    for (line in lines) {
-        if (lines[line].id == id) {
-            if (lines[line].className == "selected") {
-                lines[line].className = ""
-                id_reg.value = ""
-                form_acao.style.display = 'none'
+    let lines = document.getElementsByTagName('tr');
+    let id_reg = document.getElementById("id-reg");
+    let form_acao = document.getElementById("form-acao");
+
+    for (let line of lines) {
+        if (line.id == id) {
+            if (line.classList.contains("selected")) {
+                line.classList.remove("selected");
+                id_reg.value = "";
+                form_acao.classList.remove("show");
+            } else {
+                for (let l of lines) l.classList.remove("selected");
+                line.classList.add("selected");
+                id_reg.value = id;
+                form_acao.classList.add("show");
             }
-            else {
-                lines[line].className = "selected"
-                id_reg.value = id
-                form_acao.style.display = 'block'
-            }
-        }
-        else {
-            lines[line].className = ""
+        } else {
+            line.classList.remove("selected");
         }
     }
 }
@@ -34,31 +34,49 @@ function pagar(id) {
     div.style = "animation-name: form; animation-time: 1s;"
 
     div.innerHTML = `
-        <div class="pagar">
-            <div style="width: 100%;height 50%;">
-                <input type="date" name="data_pagamento" required>
-            </div>
-            <div style="display: flex; width: 50%; height 50%; justify-content: center; align-items: center;">
-                <button style="margin: 2px;" type="submit" class="btn btn-success">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="1.2rem" height="1.2rem" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
-                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
-                    </svg>
-                </button>
-                <button style="margin: 2px;" type="button" class="btn btn-secondary" onclick="cancelar(${id})">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="1.2rem" height="1.2rem" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                    </svg>
-                </button>
-            </div>
+    <div class="pagar">
+        <div style="width: 100%; height: 50%;">
+            <input onclick="event.stopPropagation()" type="date" name="data_pagamento" required>
         </div>
-    `;
+        <div style="display: flex; width: 50%; height: 50%; justify-content: center; align-items: center;">
+            <button onclick="event.stopPropagation()" style="margin: 2px;" type="submit" class="btn btn-success">
+                <i class="bi bi-check-lg"></i>
+            </button>
+            <button style="margin: 2px;" type="button" class="btn btn-secondary"
+                onclick="handleCancelarClick(event, '${id}')">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+`;
 }
 
-function cancelar(id) {
-  const div = document.getElementById("pagar-"+id);
+function handlePagarClick(event, id) {
+    event.stopPropagation(); // não deixa o clique subir pro <tr>
+    
+    let row = document.getElementById(id);
+    
+    // se ainda não estiver selecionada, seleciona a linha
+    if (!row.classList.contains("selected")) {
+        select(id); 
+    }
 
-  div.innerHTML =
-    '<button style="padding: 0.2rem;" class="btn btn-primary btn-sm" onclick="pagar(' + id +')">Pagar</button>';
+    // chama sua função pagar normalmente
+    pagar(id);
+}
+
+function handleCancelarClick(event, id) {
+    event.stopPropagation(); // evita desmarcar linha
+    
+    let div = document.getElementById("pagar-" + id);
+
+    // volta para o botão original
+    div.innerHTML = `
+        <button style="padding: 0.2rem;" class="btn btn-primary btn-sm"
+            onclick="handlePagarClick(event, '${id}')">
+            Pagar
+        </button>
+    `;
 }
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -79,6 +97,59 @@ window.addEventListener('DOMContentLoaded', function () {
         keepStatic: true
       }).mask(telInput);
     }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const offcanvasEl = document.getElementById('filtrosOffcanvas');
+  const backdrop = document.getElementById('custom-offcanvas-backdrop');
+
+  if (!offcanvasEl || !backdrop || typeof bootstrap === 'undefined') return;
+
+  // Obter a instância do Offcanvas
+  const bsOffcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
+
+  // Quando o offcanvas vai abrir -> mostra o backdrop (entrada)
+  offcanvasEl.addEventListener('show.bs.offcanvas', () => {
+    // remove classe de closing caso exista
+    backdrop.classList.remove('closing');
+
+    // força reflow pra garantir transição
+    void backdrop.offsetWidth;
+
+    // marca como show (entra)
+    backdrop.classList.add('show');
+  });
+
+  // Quando o offcanvas vai fechar -> anima o backdrop para saída
+  offcanvasEl.addEventListener('hide.bs.offcanvas', (e) => {
+    // se não houver backdrop (safety)
+    if (!backdrop) return;
+
+    // inicia a animação de saída
+    backdrop.classList.remove('show');
+    backdrop.classList.add('closing');
+
+    // quando terminar a transição de opacity, limpa a classe closing
+    const onTransitionEnd = (ev) => {
+      if (ev.propertyName !== 'opacity') return;
+      backdrop.removeEventListener('transitionend', onTransitionEnd);
+      backdrop.classList.remove('closing');
+      // NOTA: não removemos o elemento do DOM (ele é fixo)
+    };
+
+    backdrop.addEventListener('transitionend', onTransitionEnd);
+    // não prevenimos a ação do bootstrap; apenas animamos o backdrop
+  });
+
+  // Se o offcanvas foi completamente ocultado (evento final), garantir estado limpo
+  offcanvasEl.addEventListener('hidden.bs.offcanvas', () => {
+    backdrop.classList.remove('show', 'closing');
+  });
+
+  // Clique no backdrop fecha o offcanvas (comportamento comum)
+  backdrop.addEventListener('click', () => {
+    bsOffcanvas.hide();
+  });
 });
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -66,7 +66,7 @@
                             <form method="post" action="{% url 'contas:marcar_como_pago' conta.pk %}">
                                 {% csrf_token %}
                                 <div id="pagar-{{ conta.id }}">
-                                    <button style="padding: 0.2rem;" onclick="pagar('{{ conta.id }}')" class="btn btn-primary btn-sm">Pagar</button>
+                                    <button style="padding: 0.2rem;" onclick="handlePagarClick(event, '{{ conta.id }}')" class="btn btn-primary btn-sm">Pagar</button>
                                 </div>
                             </form>
                         {% endif %}

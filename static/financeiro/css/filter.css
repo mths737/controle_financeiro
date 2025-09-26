@@ -1,0 +1,56 @@
+/* Inputs arredondados e com sombra sutil no foco */
+.form-control.rounded, .form-control.rounded-pill {
+    border-radius: 0.5rem;
+    box-shadow: inset 0 0 0 0 rgba(0,0,0,0);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-control.rounded:focus, .form-control.rounded-pill:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.25);
+    outline: none;
+}
+
+/* Botões arredondados com padding consistente */
+.btn-rounded {
+    border-radius: 50px;
+    padding: 0.4rem 1.2rem;
+}
+
+/* Offcanvas elegante */
+.offcanvas {
+    width: 320px;
+    box-shadow: -4px 0 12px rgba(0,0,0,0.15);
+    background-color: rgb(200, 200, 200, 0.5);
+}
+
+/* backdrop customizado */
+.custom-backdrop {
+  position: fixed;
+  inset: 0; /* top:0;right:0;bottom:0;left:0; */
+  z-index: 1040; /* ajuste se necessário (bootstrap offcanvas tem z-index ~1045) */
+  pointer-events: none; /* só ativa quando visível */
+  opacity: 0;
+  background-color: rgba(0,0,0,0.0); /* começa transparente */
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition: opacity 360ms ease, backdrop-filter 360ms ease, background-color 360ms ease;
+}
+
+/* estado visível (entrada) */
+.custom-backdrop.show {
+  pointer-events: auto;
+  opacity: 1;
+  background-color: rgba(0,0,0,0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* estado de saída — anima para transparente */
+.custom-backdrop.closing {
+  pointer-events: none;
+  opacity: 0;
+  background-color: rgba(0,0,0,0.0);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+}

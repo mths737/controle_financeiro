@@ -1,0 +1,77 @@
+/* container */
+#notifications-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* base das notificações */
+.notification {
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  min-width: 240px;
+  max-width: 360px;
+  opacity: 0;
+  transform: translateX(60px); /* começa fora à direita */
+  will-change: transform, opacity;
+  transition: transform 0.45s cubic-bezier(.22,.9,.32,1), opacity 0.35s ease;
+}
+
+/* cores por tipo (ajuste à sua paleta) */
+.notification.success { background: #28a745; }
+.notification.error   { background: #e53935; }
+.notification.info    { background: #1e88e5; }
+.notification.warning { background: #ffb74d; }
+
+/* aparece deslizando da direita para o lugar */
+.notification.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* sumir: sobe e some */
+.notification.hide {
+  transform: translateY(-24px);
+  opacity: 0;
+  transition-duration: 0.45s;
+}
+
+.notification {
+  position: relative; /* permite posicionar o botão dentro */
+  padding-right: 36px; /* espaço pro botão */
+}
+
+.notification button {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 22px; /* aumenta o tamanho do ícone */
+  cursor: pointer;
+  opacity: 0.8;
+  width: 32px;  /* área clicável maior */
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%; /* deixa arredondado */
+  transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+.notification button:hover {
+  background: rgba(255, 255, 255, 0.2); /* círculo de hover */
+  opacity: 1;
+}
+
+.notification button i {
+  font-size: 22px; /* garante que o ícone também cresce */
+  line-height: 1;
+}

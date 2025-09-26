@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import dashboard, dashboard_view
+from .views import dashboard_view
 
 router = DefaultRouter()
 
@@ -11,6 +11,5 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    path('', dashboard, name='dashboard'),
-    path('2', dashboard_view, name='dashboard2'),
+    path('', dashboard_view, name='dashboard'),
 ]

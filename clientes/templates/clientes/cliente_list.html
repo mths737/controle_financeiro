@@ -40,15 +40,19 @@
                 <col style="width: 22%;">
             </colgroup>
             <tbody>
-                {% for cliente in clientes %}
-                {% if cliente.ativo %}
-                <tr id="{{ cliente.id }}" onclick="select('{{ cliente.id }}')">
-                    <td><p>{{ cliente.nome }}</p></td>
-                    <td><p>{{ cliente.cpf_cnpj }}</p></td>
-                    <td><p>{{ cliente.telefone }}</p></td>
-                    <td><p>{{ cliente.email }}</p></td>
-                </tr>
-                {% endif %}
+                {% for cliente in filter.qs %}
+                    {% if cliente.ativo %}
+                    <tr id="{{ cliente.id }}" onclick="select('{{ cliente.id }}')">
+                        <td><p>{{ cliente.nome }}</p></td>
+                        <td><p>{{ cliente.cpf_cnpj }}</p></td>
+                        <td><p>{{ cliente.telefone }}</p></td>
+                        <td><p>{{ cliente.email }}</p></td>
+                    </tr>
+                    {% endif %}
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">Nenhum resultado encontrado.</td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>

@@ -5,7 +5,7 @@
     {% csrf_token %}
     <h3>Confirmar exclusão?</h3>
     <div id="btn-div">
-        <input name="type" type="hidden" value="delete">
+        <input name="type" type="hidden" value="delete_confirm">
         <input name="id" type="hidden" value="{{ id }}">
         <button type="submit" class="btn btn-success">Confirmar</button>
         <a href="" class="btn btn-secondary">Cancelar</a>

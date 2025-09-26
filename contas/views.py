@@ -80,10 +80,13 @@ def conta_list(request):
     if request.method == "GET":
         conta_filter = ContaFilter(request.GET, queryset=contas_qs)
         form = ContaForm()
+        form.fields.pop('data_pagamento', None)
+        
         return render(request, "contas/conta_list.html", {
             "contas": conta_filter.qs,
             "form": form,
             "filter": conta_filter,
+            'advanced_filter': True,
         })
 
     # 🔹 POST → decide ação
@@ -99,6 +102,7 @@ def conta_list(request):
         contas_qs = ordenar_contas(contas_qs, btn_order, new_order)
         conta_filter = ContaFilter(request.GET, queryset=contas_qs)
         form = ContaForm()
+        
 
         return render(request, "contas/conta_list.html", {
             "contas": contas_qs,
@@ -106,12 +110,15 @@ def conta_list(request):
             "filter": conta_filter,
             "order_by": btn_order,
             "order": new_order,
+            'advanced_filter': True,
         })
 
     # Editar
     if action == "edit":
         conta = get_object_or_404(Conta, pk=request.POST["id"])
         form = ContaForm(instance=conta)
+        if not conta.data_pagamento:
+            form.fields.pop('data_pagamento', None)
         conta_filter = ContaFilter(request.GET, queryset=contas_qs)
         return render(request, "contas/conta_list.html", {
             "contas": conta_filter.qs,
@@ -119,6 +126,7 @@ def conta_list(request):
             "alt": True,
             "id": conta.id,
             "filter": conta_filter,
+            'advanced_filter': True,
         })
 
     # Excluir (confirmação)
@@ -129,12 +137,15 @@ def conta_list(request):
             "delete": True,
             "id": request.POST["id"],
             "filter": conta_filter,
+            'advanced_filter': True,
         })
 
     # Salvar edição
     if action == "alt":
         conta = get_object_or_404(Conta, pk=request.POST.get("id"))
         form = ContaForm(request.POST, instance=conta)
+        #form.Meta.exclude.append['data_pagamento']
+
         if form.is_valid():
             form.save()
             messages.success(request, "Conta alterada com sucesso!")
