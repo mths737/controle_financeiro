@@ -18,6 +18,19 @@ function select(id) {
                 id_reg.value = "";
                 form_acao.classList.remove("show");
             } else {
+                // 🔹 fecha formulários de pagamento abertos ao trocar de linha
+                document.querySelectorAll("[id^='pagar-']").forEach(div => {
+                    const otherId = div.id.replace("pagar-", "");
+                    // só resetar se tiver o formulário (classe 'pagar' ou input)
+                    if (div.querySelector('input[name="data_pagamento"]')) {
+                        div.innerHTML = `
+                            <button onclick="handlePagarClick(event, '${otherId}')" class="pagar btn btn-primary btn-sm">
+                                <i class="bi bi-currency-dollar fs-8 me-2"></i>Pagar
+                            </button>
+                        `;
+                    }
+                });
+
                 for (let l of lines) l.classList.remove("selected");
                 line.classList.add("selected");
                 id_reg.value = id;
@@ -30,51 +43,63 @@ function select(id) {
 }
 
 function pagar(id) {
-    const div = document.getElementById("pagar-"+id);
-    div.style = "animation-name: form; animation-time: 1s;"
+    const div = document.getElementById("pagar-" + id);
 
     div.innerHTML = `
-    <div class="pagar">
-        <div style="width: 100%; height: 50%;">
-            <input onclick="event.stopPropagation()" type="date" name="data_pagamento" required>
+        <div class="pagar" style="animation-name: form; animation-time: 1s;">
+            <div style="width: 100%; height: 50%;">
+                <input onclick="event.stopPropagation()" type="date" name="data_pagamento" required>
+            </div>
+            <div style="display: flex; width: 50%; height: 50%; justify-content: center; align-items: center;">
+                <button onclick="event.stopPropagation()" type="submit" class="pagar btn btn-success">
+                    <i class="bi bi-check-lg"></i>
+                </button>
+                <button type="button" class="pagar btn btn-secondary"
+                    onclick="handleCancelarClick(event, '${id}')">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
         </div>
-        <div style="display: flex; width: 50%; height: 50%; justify-content: center; align-items: center;">
-            <button onclick="event.stopPropagation()" style="margin: 2px;" type="submit" class="btn btn-success">
-                <i class="bi bi-check-lg"></i>
-            </button>
-            <button style="margin: 2px;" type="button" class="btn btn-secondary"
-                onclick="handleCancelarClick(event, '${id}')">
-                <i class="bi bi-x-lg"></i>
-            </button>
-        </div>
-    </div>
-`;
+    `;
 }
 
 function handlePagarClick(event, id) {
-    event.stopPropagation(); // não deixa o clique subir pro <tr>
-    
+    event.preventDefault();
+    event.stopPropagation();
+
+    // 🔹 fecha todos os outros "formularios de pagar"
+    document.querySelectorAll("[id^='pagar-']").forEach(div => {
+        const otherId = div.id.replace("pagar-", "");
+        if (otherId !== id) {
+            div.innerHTML = `
+                <button onclick="handlePagarClick(event, '${otherId}')" class="pagar btn btn-primary btn-sm">
+                    <i class="bi bi-currency-dollar fs-8 me-2"></i>Pagar
+                </button>
+            `;
+        }
+    });
+
+    // 🔹 seleciona a linha clicada (mesma lógica que você já tinha)
     let row = document.getElementById(id);
-    
-    // se ainda não estiver selecionada, seleciona a linha
     if (!row.classList.contains("selected")) {
-        select(id); 
+        select(id);
     }
 
-    // chama sua função pagar normalmente
+    // 🔹 abre o formulário para o id clicado
     pagar(id);
 }
 
 function handleCancelarClick(event, id) {
-    event.stopPropagation(); // evita desmarcar linha
-    
+    event.preventDefault();
+    event.stopPropagation();
+
     let div = document.getElementById("pagar-" + id);
 
     // volta para o botão original
     div.innerHTML = `
-        <button style="padding: 0.2rem;" class="btn btn-primary btn-sm"
+        <button class="pagar btn btn-primary btn-sm"
             onclick="handlePagarClick(event, '${id}')">
-            Pagar
+            <i class="bi bi-currency-dollar fs-8 me-2"></i>Pagar
         </button>
     `;
 }

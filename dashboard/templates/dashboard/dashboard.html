@@ -1,110 +1,159 @@
-{% extends 'base.html' %}
+{% extends 'content_base.html' %}
+
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
+
 {% load static %}
-<script src="{% static 'financeiro/scripts/script.js' %}"></script>
-<link href="{% static 'financeiro/css/style.css' %}" rel="stylesheet">
-
-<div id="content">
+<link href="{% static 'financeiro/css/dashboard.css' %}" rel="stylesheet">
+<div class="content container-fluid dashboard-container">
     <div id="header" class="d-flex justify-content-between">
-        <h2>Dashboard Financeiro</h2>
+        <h2 class="fw-bold mb-2"><i class="bi bi-speedometer2 fs-5 me-2"></i>Dashboard Financeiro</h2>
+
+        <!-- Filtro de período -->
+        <form method="get" class="d-flex align-items-center gap-2">
+            <select name="periodo" class="form-select form-select-sm shadow-sm rounded-pill" onchange="this.form.submit()">
+                <option value="7" {% if periodo == '7' %}selected{% endif %}>Últimos 7 dias</option>
+                <option value="30" {% if periodo == '30' %}selected{% endif %}>Este mês</option>
+                <option value="90" {% if periodo == '90' %}selected{% endif %}>Últimos 3 meses</option>
+                <option value="365" {% if periodo == '365' %}selected{% endif %}>Último ano</option>
+            </select>
+        </form>
     </div>
 
-    <div class="row mb-4">
+    <!-- Cards com variação -->
+    <div class="row g-4 mb-4">
         <div class="col-md-4">
-            <div class="card bg-success text-white">
-                <div class="card-body">
-                    <h5>Entradas</h5>
-                    <h3>R$ {{ total_entrada|floatformat:2 }}</h3>
-                </div>
+            <div class="card shadow-sm border-0 rounded-4 p-4 text-center">
+                <h6 class="text-muted mb-2">Entradas</h6>
+                <h3 class="fw-bold text-success mb-1">R$ {{ total_entrada|floatformat:2 }}</h3>
+                <small class="{% if entrada_variacao >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    {% if entrada_variacao >= 0 %}▲{% else %}▼{% endif %}
+                    {{ entrada_variacao|floatformat:1 }}% vs período anterior
+                </small>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card bg-danger text-white">
-                <div class="card-body">
-                    <h5>Saídas</h5>
-                    <h3>R$ {{ total_saida|floatformat:2 }}</h3>
-                </div>
+            <div class="card shadow-sm border-0 rounded-4 p-4 text-center">
+                <h6 class="text-muted mb-2">Saídas</h6>
+                <h3 class="fw-bold text-danger mb-1">R$ {{ total_saida|floatformat:2 }}</h3>
+                <small class="{% if saida_variacao <= 0 %}text-success{% else %}text-danger{% endif %}">
+                    {% if saida_variacao >= 0 %}▲{% else %}▼{% endif %}
+                    {{ saida_variacao|floatformat:1 }}% vs período anterior
+                </small>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h5>Saldo</h5>
-                    <h3>R$ {{ saldo|floatformat:2 }}</h3>
-                </div>
+            <div class="card shadow-sm border-0 rounded-4 p-4 text-center">
+                <h6 class="text-muted mb-2">Saldo</h6>
+                <h3 class="fw-bold {% if saldo >= 0 %}text-success{% else %}text-danger{% endif %} mb-1">
+                    R$ {{ saldo|floatformat:2 }}
+                </h3>
+                <small class="{% if saldo_variacao >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    {% if saldo_variacao >= 0 %}▲{% else %}▼{% endif %}
+                    {{ saldo_variacao|floatformat:1 }}% vs período anterior
+                </small>
             </div>
         </div>
     </div>
 
-    <h4>Resumo Mensal</h4>
-    <div id="table">
-        <div id="thead">
-            <table class="table table-bordered">
-                <thead>
+    <!-- Gráfico e Top Categorias -->
+    <div class="row g-4 align-items-start">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4 p-4">
+                <canvas id="graficoFinanceiro" height="150"></canvas>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4 p-4">
+                <h5 class="fw-bold mb-3">🏆 Top Categorias</h5>
+                <ul class="list-group list-group-flush">
+                    {% for c in top_categories %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ c.categoria }}
+                            <span class="fw-semibold text-secondary">R$ {{ c.total|floatformat:2 }}</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-center text-muted">Sem dados</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lançamentos Recentes -->
+    <div class="card shadow-sm border-0 rounded-4 mt-5 p-4">
+        <h5 class="fw-bold mb-3">🕒 Lançamentos Recentes</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
                     <tr>
-                        <th>Mês</th>
-                        <th>Entradas</th>
-                        <th>Saídas</th>
-                        <th>Saldo</th>
+                        <th>Tipo</th>
+                        <th>Cliente</th>
+                        <th>Categoria</th>
+                        <th>Valor</th>
+                        <th>Vencimento</th>
+                        <th>Pagamento</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
-            </table>
-        </div>
-        <div id="tbody">
-            <table class="table table-bordered">
                 <tbody>
-                    {% for item in resumo_mensal %}
+                    {% for r in recentes %}
                     <tr>
-                        <td><p>{{ item.mes }}</p></td>
-                        <td><p>R$ {{ item.entrada|floatformat:2 }}</p></td>
-                        <td><p>R$ {{ item.saida|floatformat:2 }}</p></td>
-                        <td><p>R$ {{ item.saldo|floatformat:2 }}</p></td>
+                        <td>{{ r.tipo }}</td>
+                        <td>{{ r.cliente }}</td>
+                        <td>{{ r.categoria }}</td>
+                        <td>R$ {{ r.valor|floatformat:2 }}</td>
+                        <td>{{ r.data_vencimento|date:"d/m/Y" }}</td>
+                        <td>{% if r.data_pagamento %}{{ r.data_pagamento|date:"d/m/Y" }}{% else %}—{% endif %}</td>
+                        <td>{{ r.status }}</td>
                     </tr>
+                    {% empty %}
+                    <tr><td colspan="7" class="text-center text-muted">Sem lançamentos</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
-
-    <h4 class="mt-5">Gráfico de Entradas e Saídas</h4>
-    <canvas id="graficoFinanceiro" height="100"></canvas>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-        const labels = {{ labels_json|safe }};
-        const entradas = {{ entradas_json|safe }};
-        const saidas = {{ saidas_json|safe }};
-
-        const ctx = document.getElementById('graficoFinanceiro').getContext('2d');
-
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Entradas',
-                        data: entradas,
-                        backgroundColor: 'rgba(75, 192, 192, 0.7)'
-                    },
-                    {
-                        label: 'Saídas',
-                        data: saidas,
-                        backgroundColor: 'rgba(255, 99, 132, 0.7)'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'top' },
-                    title: { display: true, text: 'Fluxo Financeiro Mensal' }
-                }
-            }
-        });
-    </script>
 </div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const labels = {{ labels_json|safe }};
+    const entradas = {{ entradas_json|safe }};
+    const saidas = {{ saidas_json|safe }};
+
+    const ctx = document.getElementById('graficoFinanceiro').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Entradas',
+                    data: entradas,
+                    backgroundColor: 'rgba(25, 135, 84, 0.7)',
+                    borderRadius: 6,
+                },
+                {
+                    label: 'Saídas',
+                    data: saidas,
+                    backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                    borderRadius: 6,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: 'Fluxo Financeiro Mensal' }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
 {% endblock %}

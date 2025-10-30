@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Case, When, Value, IntegerField
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+
 from datetime import date, datetime, timezone
 
 from .forms import ContaForm
@@ -40,6 +42,8 @@ def ordenar_contas(queryset, order_by, order_direction):
 
     return queryset.order_by(field if order_direction == "cre" else f"-{field}")
 
+
+@login_required()
 def marcar_como_pago(request, pk):
     """
     Marca a conta como paga usando a data enviada em POST (YYYY-MM-DD).
@@ -73,6 +77,7 @@ def marcar_como_pago(request, pk):
     return redirect('contas:conta_list')
 
 
+@login_required()
 def conta_list(request):
     contas_qs = get_contas_queryset()
 

@@ -1,3 +1,20 @@
+:root {
+  --bg-color: rgb(200, 200, 200);
+  --card-shadow: 0px 10px 5px 1px rgba(0, 0, 0, 0.3);
+  --card-shadow-hover: 0px 15px 5px 1px rgba(0, 0, 0, 0.3);
+  --nav-bg-color: rgba(0, 0, 0, 0.5);
+  --card-bg-color: rgb(255, 255, 255);
+}
+
+/* Tema Escuro */
+[data-bs-theme="dark"] {
+  --bg-color: #000000;
+  --card-shadow: inset 0px -10px 5px 1px rgba(255, 255, 255, 0.3);
+  --card-shadow-hover: inset 0px -5px 5px 1px rgba(255, 255, 255, 0.3);
+  --nav-bg-color: rgba(255, 255, 255, 0.5);
+  --card-bg-color: rgb(50, 50, 50);
+}
+
 html {
     width: 100%;
     height: 100%;
@@ -6,9 +23,10 @@ html {
 body {
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
     width: 100%;
     height: 100%;
-    background-color: rgb(200, 200, 200);
+    background-color: var(--bg-color);
 }
 
 body nav {
@@ -16,6 +34,17 @@ body nav {
     top: 0px;
     padding: 0px !important;
     margin: 0px !important;
+    background-color: var(--nav-bg-color);
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: bold;
+}
+
+.nav-link:hover {
+    color: rgba(255, 255, 255);
+    text-decoration: underline;
 }
 
 body main {
@@ -27,10 +56,11 @@ body main {
     display: flex;
     padding: 0px;
     margin: 0px;
+    flex: 1;
 }
 
 body footer {
-    position:absolute;
+    position:fixed;
     display: flex;
     height: 25px;
     width: 100%;
@@ -40,7 +70,7 @@ body footer {
     text-align: center;
     justify-content: center;
     align-items: center;
-    background-color: black;
+    background-color: var(--nav-bg-color);
     color: white;
 }
 
@@ -49,13 +79,30 @@ footer p {
     padding: 0px;
 }
 
-input {
-    border-radius: 5px;
+input, select, option {
+    border-radius: 30px !important;
+    background-color: rgba(255, 255, 255, 0.8) !important;
+    box-shadow: inset 0px 0px 5px 1px rgba(0, 0, 0, 0.1) !important;
+    padding-left: 10px;
+    color: black !important;
+}
+
+
+a {
+    border-radius: 30px !important;
 }
 
 button {
+    border-radius: 30px !important;
     margin: 0.25rem;
     font-size: 0.7rem !important;
+}
+
+#content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
 }
 
 #header {
@@ -64,15 +111,6 @@ button {
     justify-content: center;
     align-items: center;
 }
-
-#content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-
-}
-
 
 #footer {
     margin-top: 1rem;
@@ -101,4 +139,33 @@ button {
     max-width: 200px;       /* largura suficiente pros botões */
     opacity: 1;
     transform: translateY(0) scale(1);
+}
+
+/* Bloqueia seleção de texto globalmente */
+body, a, th {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Permite seleção apenas em inputs e tabelas */
+input,
+textarea,
+select,
+td {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+.card {
+    background-color: var(--card-bg-color) !important;
+    box-shadow: var(--card-shadow) !important;
+    transition: 0.1s;
+}
+
+.card:hover {
+    box-shadow: var(--card-shadow-hover) !important;
 }

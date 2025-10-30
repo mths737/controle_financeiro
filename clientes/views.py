@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from clientes.filters import ClienteFilter
 from .forms import ClienteForm
@@ -24,6 +25,25 @@ def formatar_telefone(numero: str) -> str:
     return numero
 
 
+def ordenar_clientes(queryset, order_by, order_direction):
+    """
+    Aplica ordenação no queryset de Cliente.
+    order_by: string vinda do botão (ex: "nome", "cpf_cnpj", "telefone", "email", "ativo")
+    order_direction: "cre" (crescente) ou "dec" (decrescente)
+    """
+    order_fields_map = {
+        "nome": "nome",
+        "cpf_cnpj": "cpf_cnpj",
+        "telefone": "telefone",
+        "email": "email",
+        "ativo": "ativo",
+    }
+
+    field = order_fields_map.get(order_by, "nome")
+    return queryset.order_by(field if order_direction == "cre" else f"-{field}")
+
+
+@login_required()
 def cliente_list(request):
     clientes_qs = Cliente.objects.all()
     cliente_filter = ClienteFilter(request.GET, queryset=clientes_qs)
@@ -50,31 +70,18 @@ def cliente_list(request):
 
     # --- ordenação ---
     if btn_order:
-        current_order_by = request.POST.get("order_by")
+        btn_order = request.POST.get("btn_order")
         current_order = request.POST.get("order", "cre")
 
-        # toggle da direção (cre -> dec -> cre)
-        if btn_order == current_order_by:
-            new_order = "dec" if current_order == "cre" else "cre"
-        else:
-            new_order = "cre"
+        # toggle igual ao padrão que você já usa
+        new_order = "dec" if (btn_order == request.POST.get("order_by") and current_order == "cre") else "cre"
 
-        # campos possíveis
-        order_fields_map = {
-            "nome": "nome",
-            "cpf_cnpj": "cpf_cnpj",
-            "telefone": "telefone",
-            "email": "email",
-        }
-        order_field = order_fields_map.get(btn_order, "nome")
+        clientes_qs = ordenar_clientes(clientes_qs, btn_order, new_order)
+        cliente_filter = ClienteFilter(request.GET, queryset=clientes_qs)
 
-        if new_order == "cre":
-            clientes = cliente_filter.qs.order_by(order_field)
-        else:
-            clientes = cliente_filter.qs.order_by(f"-{order_field}")
-
+        # então renderiza com o queryset ordenado
         return render(request, 'clientes/cliente_list.html', {
-            'clientes': clientes,
+            'clientes': clientes_qs,
             'form': form,
             'filter': cliente_filter,
             'order_by': btn_order,

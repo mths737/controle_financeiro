@@ -1,15 +1,9 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 from .views import dashboard_view
 
-router = DefaultRouter()
 
 app_name = 'dashboard'
 
 urlpatterns = [
-    path('api/', include(router.urls)),
-]
-
-urlpatterns += [
-    path('', dashboard_view, name='dashboard'),
+    path('', dashboard_view, name="dashboard"),
 ]

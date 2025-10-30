@@ -1,3 +1,14 @@
+:root {
+    --filter-color: black;
+    --filter-hover: rgba(0, 0, 0, 0.1);
+}
+
+/* Tema Escuro */
+[data-bs-theme="dark"] {
+    --filter-color: white;
+    --filter-hover: rgba(255, 255, 255, 0.5);
+}
+
 /* Inputs arredondados e com sombra sutil no foco */
 .form-control.rounded, .form-control.rounded-pill {
     border-radius: 0.5rem;
@@ -11,17 +22,27 @@
     outline: none;
 }
 
+#filter-extra {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: var(--filter-color);
+}
+
+#filter-extra:hover {
+  background-color: var(--filter-hover) !important;
+}
+
 /* Botões arredondados com padding consistente */
 .btn-rounded {
-    border-radius: 50px;
+    border-radius: 30px;
     padding: 0.4rem 1.2rem;
 }
 
 /* Offcanvas elegante */
 .offcanvas {
     width: 320px;
-    box-shadow: -4px 0 12px rgba(0,0,0,0.15);
+    box-shadow: -10px 0px 15px 5px rgba(0,0,0,0.5);
     background-color: rgb(200, 200, 200, 0.5);
+    color: var(--filter-color)
 }
 
 /* backdrop customizado */
@@ -41,7 +62,7 @@
 .custom-backdrop.show {
   pointer-events: auto;
   opacity: 1;
-  background-color: rgba(0,0,0,0.45);
+  background-color: rgba(0,0,0,0.3);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }

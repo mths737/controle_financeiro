@@ -1,105 +1,117 @@
+# views.py (ex: app dashboard ou contas)
+from datetime import timedelta, date
 from django.shortcuts import render
-from django.db.models import Sum
-from django.db.models.functions import TruncMonth
+from django.db.models import Sum, Q
 from django.utils import timezone
-from datetime import datetime
+from django.contrib.auth.decorators import login_required
 import json
-from decimal import Decimal
 
-# ajuste o import caso sua app/model esteja em outro local
-from contas.models import Conta
+from contas.models import Conta  # ajuste o import se o app tiver outro nome
+# from .models import Conta  # se a view estiver no mesmo app
 
 
+@login_required()
 def dashboard_view(request):
-    today = timezone.localdate()
+    """
+    Dashboard que usa o modelo Conta.
+    GET param: periodo (dias) - default 30
+    """
 
-    # queryset base (pode filtrar por usuário se houver multi-tenant)
-    contas_qs = Conta.objects.select_related('cliente', 'categoria').all()
+    # período em dias (string vindo do select)
+    periodo = request.GET.get("periodo", "30")
+    try:
+        dias = int(periodo)
+    except ValueError:
+        dias = 30
+        periodo = "30"
 
-    # Totais gerais
-    total_entrada = contas_qs.filter(tipo='R').aggregate(total=Sum('valor'))['total'] or 0
-    total_saida = contas_qs.filter(tipo='P').aggregate(total=Sum('valor'))['total'] or 0
-    saldo = (total_entrada or 0) - (total_saida or 0)
+    hoje = timezone.localdate()  # data atual
+    inicio = hoje - timedelta(days=dias-1)  # inclui hoje (ex: dias=30 -> 30 dias incluindo hoje)
+    # período anterior de mesmo tamanho
+    inicio_anterior = inicio - timedelta(days=dias)
+    fim_anterior = inicio - timedelta(days=1)
 
-    # Resumo mensal (últimos 6 meses)
-    meses_qs = contas_qs.annotate(mes=TruncMonth('data_vencimento')) \
-                       .values('mes', 'tipo') \
-                       .annotate(total=Sum('valor')) \
-                       .order_by('mes')
+    # queryset base no período atual
+    contas_periodo = Conta.objects.select_related('cliente', 'categoria').filter(
+        data_vencimento__range=(inicio, hoje)
+    )
 
-    resumo = {}  # { 'Aug/25': {'entrada':0, 'saida':0}, ... }
-    for item in meses_qs:
-        if not item['mes']:
-            continue
-        mes_str = item['mes'].strftime('%b/%y')  # ex: Aug/25
-        if mes_str not in resumo:
-            resumo[mes_str] = {'entrada': 0, 'saida': 0}
-        if item['tipo'] == 'R':
-            resumo[mes_str]['entrada'] += item['total'] or 0
-        else:
-            resumo[mes_str]['saida'] += item['total'] or 0
+    # totais atuais
+    total_entrada = contas_periodo.filter(tipo='R', data_pagamento__isnull=False).aggregate(total=Sum('valor'))['total'] or 0
+    total_saida = contas_periodo.filter(tipo='P', data_pagamento__isnull=False).aggregate(total=Sum('valor'))['total'] or 0
+    saldo = total_entrada - total_saida
 
-    # garantir ordem dos últimos 6 meses mesmo se não houver dados
+    # período anterior
+    contas_anteriores = Conta.objects.filter(data_vencimento__range=(inicio_anterior, fim_anterior))
+    entrada_ant = contas_anteriores.filter(tipo='R').aggregate(total=Sum('valor'))['total'] or 0
+    saida_ant = contas_anteriores.filter(tipo='P').aggregate(total=Sum('valor'))['total'] or 0
+    saldo_ant = entrada_ant - saida_ant
+
+    # função para calcular variação percentual (retorna float)
+    def variacao(atual, anterior):
+        if anterior == 0:
+            if atual == 0:
+                return 0.0
+            return 100.0
+        return ((float(atual) - float(anterior)) / float(anterior)) * 100.0
+
+    entrada_variacao = variacao(total_entrada, entrada_ant)
+    saida_variacao = variacao(total_saida, saida_ant)
+    saldo_variacao = variacao(saldo, saldo_ant)
+
+    # === Dados para o gráfico: série diária para o período selecionado ===
     labels = []
-    entradas = []
-    saidas = []
-    # cria lista dos últimos 6 meses (maior -> menor)
-    for i in range(5, -1, -1):
-        m = (today.replace(day=1) - timezone.timedelta(days=1)).replace(day=1)  # fallback
-    # melhor construir cronologicamente:
-    months = []
-    for i in range(5, -1, -1):
-        dt = (today.replace(day=1) - timezone.timedelta(days=0)).replace(day=1)
-        # calculo simples de mês-por-mês:
-        year = today.year
-        month = today.month - i
-        while month <= 0:
-            month += 12
-            year -= 1
-        months.append(datetime(year, month, 1))
+    entradas_por_dia = []
+    saidas_por_dia = []
 
-    for dt in months:
-        key = dt.strftime('%b/%y')
-        labels.append(key)
-        entradas.append(float(resumo.get(key, {}).get('entrada', 0) or 0))
-        saidas.append(float(resumo.get(key, {}).get('saida', 0) or 0))
+    for i in range(dias):
+        dia = inicio + timedelta(days=i)
+        labels.append(dia.strftime("%d/%m"))  # rótulo curto dd/mm
 
-    # Top categorias (maiores despesas e receitas)
-    top_cat = contas_qs.values('categoria__nome') \
-                      .annotate(total=Sum('valor')) \
-                      .order_by('-total')[:8]
+        soma_entradas = Conta.objects.filter(
+            tipo='R', data_vencimento=dia
+        ).aggregate(total=Sum('valor'))['total'] or 0
+
+        soma_saidas = Conta.objects.filter(
+            tipo='P', data_vencimento=dia
+        ).aggregate(total=Sum('valor'))['total'] or 0
+
+        entradas_por_dia.append(float(soma_entradas))
+        saidas_por_dia.append(float(soma_saidas))
+
+    # jsons para o template (Chart.js)
+    labels_json = json.dumps(labels)
+    entradas_json = json.dumps(entradas_por_dia)
+    saidas_json = json.dumps(saidas_por_dia)
+
+    # Top categorias (soma total no período, independente de tipo)
+    top_qs = contas_periodo.values('categoria__nome').annotate(total=Sum('valor')).order_by('-total')[:6]
+    # normalizar nome de categoria para fallback quando nulo
     top_categories = [
-        {'categoria': item['categoria__nome'] or 'Sem categoria', 'total': float(item['total'] or 0)}
-        for item in top_cat
+        {
+            "categoria": item['categoria__nome'] or "Sem categoria",
+            "total": item['total'] or 0
+        }
+        for item in top_qs
     ]
 
-    # Últimos lançamentos (10)
-    recentes_qs = contas_qs.order_by('-data_vencimento')[:10]
-    recentes = [{
-        'id': c.id,
-        'tipo': c.get_tipo_display(),
-        'cliente': str(c.cliente),
-        'categoria': c.categoria.nome if c.categoria else '—',
-        'valor': float(c.valor),
-        'data_vencimento': c.data_vencimento,
-        'data_pagamento': c.data_pagamento,
-        'status': c.status
-    } for c in recentes_qs]
-
-    # JSON para o Chart.js (já convertendo Decimals)
-    labels_json = json.dumps(labels)
-    entradas_json = json.dumps(entradas)
-    saidas_json = json.dumps(saidas)
+    # lançamentos recentes (ordena por vencimento decrescente e pega os 12 primeiros)
+    recentes = contas_periodo.order_by('-data_vencimento')[:12]
 
     context = {
-        'total_entrada': float(total_entrada or 0),
-        'total_saida': float(total_saida or 0),
-        'saldo': float(saldo or 0),
-        'labels_json': labels_json,
-        'entradas_json': entradas_json,
-        'saidas_json': saidas_json,
-        'top_categories': top_categories,
-        'recentes': recentes,
+        "periodo": periodo,
+        "total_entrada": total_entrada,
+        "total_saida": total_saida,
+        "saldo": saldo,
+        "entrada_variacao": entrada_variacao,
+        "saida_variacao": saida_variacao,
+        "saldo_variacao": saldo_variacao,
+        "labels_json": labels_json,
+        "entradas_json": entradas_json,
+        "saidas_json": saidas_json,
+        "top_categories": top_categories,
+        "recentes": recentes,
+        "dashboard":True,
     }
-    return render(request, 'dashboard/dashboard2.html', context)
 
+    return render(request, "dashboard/dashboard.html", context)

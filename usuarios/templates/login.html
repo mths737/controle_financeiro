@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+{% load static %}
+<link href="{% static 'financeiro/css/dropbox.css' %}" rel="stylesheet">
+
+<div id="dropbox-background">
+    <div id="dropbox" style="width: 360px;">
+        <h4 class="text-center mb-4">Acessar o Sistema</h4>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <input type="text" class="form-control text-center" name="username" required placeholder="Usuário">
+            </div>
+            <div class="mb-3">
+                <input type="password" class="form-control text-center" name="password" required placeholder="Senha">
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

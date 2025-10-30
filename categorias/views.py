@@ -1,11 +1,29 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from .forms import CategoriaForm
 from .models import Categoria
 from .filters import CategoriaFilter
 
 
+def ordenar_categorias(queryset, order_by, order_direction):
+    """
+    Ordena o queryset de Categoria.
+    order_by: 'nome', 'descricao', 'ativo'
+    order_direction: 'cre' (crescente) ou 'dec' (decrescente)
+    """
+    order_fields_map = {
+        "nome": "nome",
+        "descricao": "descricao",
+        "ativo": "ativo",
+    }
+
+    field = order_fields_map.get(order_by, "nome")
+    return queryset.order_by(field if order_direction == "cre" else f"-{field}")
+
+
+@login_required()
 def categoria_list(request):
     categorias_qs = Categoria.objects.all()
     categoria_filter = CategoriaFilter(request.GET, queryset=categorias_qs)
@@ -23,24 +41,23 @@ def categoria_list(request):
             btn_order = request.POST.get("btn_order")
             current_order_by = request.POST.get("order_by")
             current_order = request.POST.get("order", "cre")
-
-            # Toggle da direção
+    
+            # toggle (mesma lógica: se clicou no mesmo campo e estava 'cre', vira 'dec')
             new_order = "dec" if (btn_order == current_order_by and current_order == "cre") else "cre"
-
-            # Mapear campos
-            order_fields_map = {
-                "nome": "nome",
-            }
-            order_field = order_fields_map.get(btn_order, "nome")
-
-            categorias = categorias_qs.order_by(order_field if new_order == "cre" else f"-{order_field}")
-
-            context.update({
+    
+            # aplica ordenação antes de instanciar o filtro
+            categorias_qs = ordenar_categorias(categorias_qs, btn_order, new_order)
+    
+            categoria_filter = CategoriaFilter(request.GET, queryset=categorias_qs)
+            categorias = list(categoria_filter.qs)
+    
+            return render(request, 'categorias/categoria_list.html', {
                 'categorias': categorias,
+                'form': form,
+                'filter': categoria_filter,
                 'order_by': btn_order,
                 'order': new_order,
             })
-            return render(request, 'categorias/categoria_list.html', context)
 
         # Ações de edição/exclusão
         elif request.POST.get("btn"):

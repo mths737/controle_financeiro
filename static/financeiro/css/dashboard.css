@@ -1,0 +1,58 @@
+:root {
+  --th-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Tema Escuro */
+[data-bs-theme="dark"] {
+  --th-color: rgba(255, 255, 255, 0.8);
+}
+
+.dashboard-container {
+  min-height: calc(100vh - 120px); /* evita ultrapassar footer */
+  overflow-y: auto;
+  padding: 0px;
+}
+
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+select.form-select {
+  width: 180px;
+  border: 1px solid #ddd;
+  transition: all 0.2s ease;
+}
+
+select.form-select:hover {
+  border-color: #0d6efd;
+}
+
+table {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+canvas {
+    max-width: 100%;
+}
+
+.list-group-item {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+th {
+  color: var(--th-color) !important;
+}

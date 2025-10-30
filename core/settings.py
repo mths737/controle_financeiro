@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'clientes',
     'categorias',
     'dashboard',
+    'usuarios',
+    'configuracoes',
 ]
 
 MIDDLEWARE = [
@@ -68,6 +70,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'configuracoes.context_processors.tema_context',
             ],
         },
     },
@@ -107,6 +110,17 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# URL de redirecionamento de login
+
+LOGIN_URL = 'usuarios:login'
+LOGOUT_REDIRECT_URL = 'usuarios:login'
+LOGIN_REDIRECT_URL = 'dashboard'
+
+#Controle de sessão
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Tempo de expiração da sessão (em segundos)
+SESSION_COOKIE_AGE = 1800
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -131,3 +145,14 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',  # para login normal do Django
+        'rest_framework.authentication.BasicAuthentication',    # opcional, para testes com Postman
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # 🔒 só permite usuários logados
+    ],
+}

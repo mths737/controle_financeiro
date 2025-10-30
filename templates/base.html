@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" data-bs-theme="{{ tema }}">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Controle Financeiro{% endblock %}</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -13,18 +14,54 @@
     {% load static %}
     <script src="{% static 'financeiro/scripts/script.js' %}"></script>
     <link href="{% static 'financeiro/css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'financeiro/css/notification.css' %}" rel="stylesheet">
+    <link href="{% static 'financeiro/css/menu.css' %}" rel="stylesheet">
+    <link href="{% static 'financeiro/css/table.css' %}" rel="stylesheet">
+    <link href="{% static 'financeiro/css/filter.css' %}" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    {% include 'notificacao.html' %}
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="/">Financeiro</a>
+            {% include 'menu.html' %}
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="/dashboard/">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/clientes/">Clientes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/categorias/">Categorias</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/contas/">Contas</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/" {% if dashboard %}style="color:white;"{% endif %}>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contas/" {% if contas %}style="color:white;"{% endif %}>
+                            Contas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/clientes/" {% if clientes %}style="color:white;"{% endif %}>
+                            Clientes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categorias/" {% if categorias %}style="color:white;"{% endif %}>
+                            Categorias
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/configuracoes/" {% if configuracoes %}style="color:white;"{% endif %}>
+                            Configurações
+                        </a>
+                    </li>
                 </ul>
+            </div>
+            <div>
+                {% if user.is_authenticated %}
+                    <form action="{% url 'usuarios:logout' %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-box-arrow-right"></i> Sair
+                        </button>
+                    </form>
+                {% endif %}
             </div>
         </div>
     </nav>
@@ -36,5 +73,8 @@
     <footer>
         <p>COPYRIGHT</p>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
 </body>
 </html>

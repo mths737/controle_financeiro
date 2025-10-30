@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% block title %}Contas{% endblock %}
+{% load static %}
+{% block title %}{% endblock %}
 
 {% block content %}
 
@@ -9,22 +10,16 @@
 {% block form %}{% endblock %}
 {% endif %}
 
-{% include 'notificacao.html' %}
-
-{% load static %}
-<link href="{% static 'financeiro/css/table.css' %}" rel="stylesheet">
-<link href="{% static 'financeiro/css/notification.css' %}" rel="stylesheet">
-<link href="{% static 'financeiro/css/filter.css' %}" rel="stylesheet">
-
 
 <div id="content">
     <div id="header" class="d-flex justify-content-between">
-        <h2>Contas</h2>
+        <h2 class="fw-bold mb-2">{% block modulo %}{% endblock %}</h2>
         {% block filter %}{% endblock %}
     </div>
 
     {% block table %}{% endblock %}
 
+    {% if not dashboard %}
     <div id="footer">
         <div id="footer-actions">
             <button onclick="showDropbox()" class="btn btn-primary">Novo cadastro</button>
@@ -42,7 +37,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}

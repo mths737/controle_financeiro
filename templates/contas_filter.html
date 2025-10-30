@@ -7,7 +7,7 @@
     </button>
   </form>
   {% if advanced_filter %}
-  <button class="btn btn-outline-secondary rounded-pill" data-bs-toggle="offcanvas" data-bs-target="#filtrosOffcanvas">
+  <button id="filter-extra" class="btn btn-outline-secondary rounded-pill" data-bs-toggle="offcanvas" data-bs-target="#filtrosOffcanvas">
     <i class="bi bi-funnel"></i> Filtros Avançados
   </button>
   {% endif %}
@@ -24,19 +24,19 @@
     <form method="get" class="d-flex flex-column gap-3">
       <div>
         <label class="form-label fw-semibold">Data inicial</label>
-        {{ filter.form.data_inicio|add_class:"form-control rounded" }}
+        {{ filter.form.data_inicio|add_class:"form-control" }}
       </div>
       <div>
         <label class="form-label fw-semibold">Data final</label>
-        {{ filter.form.data_fim|add_class:"form-control rounded" }}
+        {{ filter.form.data_fim|add_class:"form-control" }}
       </div>
       <div>
         <label class="form-label fw-semibold">Valor mínimo</label>
-        {{ filter.form.valor_min|add_class:"form-control rounded" }}
+        {{ filter.form.valor_min|add_class:"form-control" }}
       </div>
       <div>
         <label class="form-label fw-semibold">Valor máximo</label>
-        {{ filter.form.valor_max|add_class:"form-control rounded" }}
+        {{ filter.form.valor_max|add_class:"form-control" }}
       </div>
       <button type="submit" class="btn btn-primary w-100 rounded-pill mt-3">Filtrar</button>
     </form>

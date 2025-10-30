@@ -1,5 +1,6 @@
 {% extends 'content_base.html' %}
 {% block title %}Contas{% endblock %}
+{% block modulo %}<i class="bi bi-cash-stack fs-5 me-2"></i>Contas{% endblock %}
 
 {% block form %}
     {% include 'contas/conta_form.html' %}
@@ -66,12 +67,20 @@
                             <form method="post" action="{% url 'contas:marcar_como_pago' conta.pk %}">
                                 {% csrf_token %}
                                 <div id="pagar-{{ conta.id }}">
-                                    <button style="padding: 0.2rem;" onclick="handlePagarClick(event, '{{ conta.id }}')" class="btn btn-primary btn-sm">Pagar</button>
+                                    <button onclick="handlePagarClick(event, '{{ conta.id }}')" class="pagar btn btn-primary btn-sm"><i class="bi bi-currency-dollar fs-8 me-2"></i>Pagar</button>
                                 </div>
                             </form>
                         {% endif %}
                     </td>
-                    <td>{{ conta.status }}</td>
+                    <td style="text-align: center;">
+                        {% if conta.status == "Pago" %}
+                            <span class="badge bg-success">{{ conta.status }}</span>
+                        {% elif conta.status == "Atrasado" %}
+                            <span class="badge bg-danger">{{ conta.status }}</span>
+                        {% elif conta.status == "Pendente" %}
+                            <span class="badge bg-warning text-dark">{{ conta.status }}</span>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
