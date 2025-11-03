@@ -1,7 +1,7 @@
-<li class="nav-item dropdown">
-  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    <i class="bi bi-list" style="font-size: 1.4rem; color: white;"></i>
-  </a>
+<li class="nav-item dropdown" id="navbarNav">
+  <button class="navbar-toggler nav-link dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-target="#navbarNav" aria-expanded="false">
+    <span class="navbar-toggler-icon"></span>
+  </button>
   <ul class="dropdown-menu shadow rounded">
     <li><a class="dropdown-item {% if dashboard %}selected{% endif %}" href="{% url 'dashboard:dashboard' %}"><i class="bi bi-speedometer2 fs-8 me-2"></i>Dashboard</a></li>
     <li><a class="dropdown-item {% if contas %}selected{% endif %}" href="{% url 'contas:conta_list' %}"><i class="bi bi-cash-stack fs-8 me-2"></i>Contas</a></li>

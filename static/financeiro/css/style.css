@@ -30,8 +30,9 @@ body {
 }
 
 body nav {
-    height: 50px;
-    top: 0px;
+    width: 100%;
+    height: 3rem;
+    position: fixed;
     padding: 0px !important;
     margin: 0px !important;
     background-color: var(--nav-bg-color);
@@ -48,23 +49,23 @@ body nav {
 }
 
 body main {
-    position: absolute;
-    top: 50px;
-    bottom: 25px;
-    left: 0px;
-    right: 0px;
+    position: fixed;
+    width: 100%;
+    top: 3rem;
+    bottom: 1.5rem;
+    left: 0;
+    right: 0;
     display: flex;
     padding: 0px;
     margin: 0px;
-    flex: 1;
 }
 
 body footer {
-    position:fixed;
-    display: flex;
-    height: 25px;
+    height: 1.5rem;
     width: 100%;
     bottom: 0px;
+    position: fixed;
+    display: flex;
     padding: 0px;
     margin: 0px;
     text-align: center;
@@ -72,11 +73,13 @@ body footer {
     align-items: center;
     background-color: var(--nav-bg-color);
     color: white;
+    z-index: 0;
 }
 
 footer p {
     margin: 0px;
     padding: 0px;
+    font-size: 0.9rem;
 }
 
 input, select, option {
@@ -94,28 +97,41 @@ a {
 
 button {
     border-radius: 30px !important;
-    margin: 0.25rem;
     font-size: 0.7rem !important;
 }
 
 #content {
     display: flex;
     flex-direction: column;
+    justify-content: center !important;
     height: 100%;
     width: 100%;
 }
 
 #header {
-    height: 12%;
     width: 100%;
+    height: 10%;
+    top: 0px;
+    justify-content: center !important;
+    align-items: center;
+    --bs-gutter-x: 0;
+}
+
+#header h2 {
+    font-size: clamp(1rem, 2vw + 1rem, 3rem);;
+}
+
+#main-content {
+    display: flex;
     justify-content: center;
     align-items: center;
+    height: 85%;
 }
 
 #footer {
+    width: 100%;
+    height: 5%;
     margin-top: 1rem;
-    display: flex;
-    justify-content: center; /* Centraliza por padrão */
 }
 
 #footer-actions {

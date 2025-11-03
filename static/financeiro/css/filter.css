@@ -75,3 +75,24 @@
   backdrop-filter: blur(0px);
   -webkit-backdrop-filter: blur(0px);
 }
+
+/* Exibe o texto em telas médias e grandes */
+.filter-text {
+  display: inline;
+}
+
+/* Em telas pequenas (até 768px), esconde o texto */
+@media (max-width: 576px) {
+  .filter-text {
+    display: none;
+  }
+
+  #filter-extra {
+    width: 45px; /* Deixa o botão mais compacto */
+  }
+
+  #filter-extra i {
+    margin: 0 !important; /* Remove o espaço lateral do ícone */
+    font-size: 1rem;
+  }
+}
