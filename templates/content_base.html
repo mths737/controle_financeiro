@@ -13,7 +13,7 @@
 
 <div id="content" class="container-fluid">
     <div id="header" class="row mt-2 mb-2 fs-2">
-        <h2 class="fw-bold d-flex align-items-center mb-2 col-12 col-sm-12 col-md-4 col-lg-4">{% block modulo %}{% endblock %}</h2>
+        <h2 class="fw-bold d-flex align-items-center mb-2 col-4 col-sm-4 col-md-4 col-lg-4">{% block modulo %}{% endblock %}</h2>
         {% block filter %}{% endblock %}
     </div>
 
@@ -21,7 +21,6 @@
         {% block table %}{% endblock %}
     </div>
 
-    {% if not dashboard %}
     <div id="footer" class="d-flex justify-content-center">
         <div id="footer-actions">
             <button onclick="showDropbox()" class="btn btn-primary">Novo cadastro</button>
@@ -39,7 +38,6 @@
             </div>
         </div>
     </div>
-    {% endif %}
 </div>
 
 {% endblock %}

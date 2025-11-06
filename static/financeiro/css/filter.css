@@ -82,7 +82,7 @@
 }
 
 /* Em telas pequenas (até 768px), esconde o texto */
-@media (max-width: 576px) {
+@media (max-width: 992px) {
   .filter-text {
     display: none;
   }

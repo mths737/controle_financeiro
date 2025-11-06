@@ -25,7 +25,7 @@ function select(id) {
                     if (div.querySelector('input[name="data_pagamento"]')) {
                         div.innerHTML = `
                             <button onclick="handlePagarClick(event, '${otherId}')" class="pagar btn btn-primary btn-sm">
-                                <i class="bi bi-currency-dollar fs-8 me-2"></i>Pagar
+                                <i class="bi bi-currency-dollar fs-8 me-2"></i>Baixar
                             </button>
                         `;
                     }
@@ -73,7 +73,7 @@ function handlePagarClick(event, id) {
         if (otherId !== id) {
             div.innerHTML = `
                 <button onclick="handlePagarClick(event, '${otherId}')" class="pagar btn btn-primary btn-sm">
-                    <i class="bi bi-currency-dollar fs-8 me-2"></i>Pagar
+                    <i class="bi bi-currency-dollar fs-8 me-2"></i>Baixar
                 </button>
             `;
         }
@@ -99,7 +99,7 @@ function handleCancelarClick(event, id) {
     div.innerHTML = `
         <button class="pagar btn btn-primary btn-sm"
             onclick="handlePagarClick(event, '${id}')">
-            <i class="bi bi-currency-dollar fs-8 me-2"></i>Pagar
+            <i class="bi bi-currency-dollar fs-8 me-2"></i>Baixar
         </button>
     `;
 }

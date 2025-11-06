@@ -38,7 +38,7 @@ th button {
     height: 100%;
     display: flex;
     border: 0px;
-    font-size: 1rem !important;
+    font-size: clamp(1vw + 0.2rem, 2vw + 0.2rem, 0.8rem) !important;
 }
 
 tbody tr {
@@ -59,7 +59,7 @@ tbody td {
     width: 100%;
     overflow:auto;
     padding: 0px !important;
-    font-size: 0.8rem !important;
+    font-size: clamp(1vw + 0.2rem, 2vw + 0.2rem, 0.8rem) !important;
 }
 
 #tbody:hover tr {

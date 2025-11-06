@@ -118,7 +118,7 @@ button {
 }
 
 #header h2 {
-    font-size: clamp(1rem, 2vw + 1rem, 3rem);;
+    font-size: clamp(1rem, 2vw + 1rem, 3rem);
 }
 
 #main-content {

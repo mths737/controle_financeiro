@@ -53,7 +53,7 @@
             <tbody>
                 {% for conta in filter.qs %}
                 <tr id="{{ conta.id }}" onclick="select('{{ conta.id }}')">
-                    <td><p>{{ conta.get_tipo_display }}</p></td>
+                    <td><p>{{ conta.tipo }}</p></td>
                     <td><p>{{ conta.cliente }}</p></td>
                     <td><p>{{ conta.categoria }}</p></td>
                     <td><p>{{ conta.valor_formatado }}</p></td>
@@ -67,7 +67,10 @@
                             <form method="post" action="{% url 'contas:marcar_como_pago' conta.pk %}">
                                 {% csrf_token %}
                                 <div id="pagar-{{ conta.id }}">
-                                    <button onclick="handlePagarClick(event, '{{ conta.id }}')" class="pagar btn btn-primary btn-sm"><i class="bi bi-currency-dollar fs-8 me-2"></i>Pagar</button>
+                                    <button onclick="handlePagarClick(event, '{{ conta.id }}')" class="pagar btn btn-primary btn-sm">
+                                        <i class="bi bi-currency-dollar fs-8 me-2"></i>
+                                        Baixar
+                                    </button>
                                 </div>
                             </form>
                         {% endif %}

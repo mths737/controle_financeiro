@@ -8,10 +8,10 @@
 <link href="{% static 'financeiro/css/dashboard.css' %}" rel="stylesheet">
 <div class="content container-fluid dashboard-container">
     <div id="header" class="d-flex justify-content-between">
-        <h2 class="fw-bold mb-2"><i class="bi bi-speedometer2 fs-5 me-2"></i>Dashboard Financeiro</h2>
+        <h2 class="fw-bold mb-2 col-8"><i class="bi bi-speedometer2 fs-5 me-2"></i>Dashboard Financeiro</h2>
 
         <!-- Filtro de período -->
-        <form method="get" class="d-flex align-items-center gap-2">
+        <form method="get" class="d-flex align-items-center gap-2 col-4">
             <select name="periodo" class="form-select form-select-sm shadow-sm rounded-pill" onchange="this.form.submit()">
                 <option value="7" {% if periodo == '7' %}selected{% endif %}>Últimos 7 dias</option>
                 <option value="30" {% if periodo == '30' %}selected{% endif %}>Este mês</option>
@@ -59,24 +59,30 @@
 
     <!-- Gráfico e Top Categorias -->
     <div class="row g-4 align-items-start">
-        <div class="col-lg-8">
-            <div class="card shadow-sm border-0 rounded-4 p-4">
-                <canvas id="graficoFinanceiro" height="150"></canvas>
-            </div>
+        <div class="col-12 col-md-8">
+          <div class="card shadow-sm border-0 rounded-4 p-4">
+            <h5 class="card-title text-center">Distribuição por Categoria</h5>
+            <canvas id="graficoCategorias" style="max-height: 300px;"></canvas>
+          </div>
         </div>
-        <div class="col-lg-4">
+        <div class="col-12 col-md-4">
             <div class="card shadow-sm border-0 rounded-4 p-4">
                 <h5 class="fw-bold mb-3">🏆 Top Categorias</h5>
                 <ul class="list-group list-group-flush">
                     {% for c in top_categories %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ c.categoria }}
-                            <span class="fw-semibold text-secondary">R$ {{ c.total|floatformat:2 }}</span>
-                        </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ c.categoria }}
+                        <span class="fw-semibold text-secondary">R$ {{ c.total|floatformat:2 }}</span>
+                    </li>
                     {% empty %}
-                        <li class="list-group-item text-center text-muted">Sem dados</li>
+                    <li class="list-group-item text-center text-muted">Sem dados</li>
                     {% endfor %}
                 </ul>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card shadow-sm border-0 rounded-4 p-4">
+                <canvas id="graficoFinanceiro" style="max-height: 300px;"></canvas>
             </div>
         </div>
     </div>
@@ -155,5 +161,48 @@
             }
         }
     });
+</script>
+<script>
+  const categoriasData = JSON.parse('{{ top_categories_json|safe }}');
+  console.log(categoriasData); // ✅ agora deve aparecer no console
+
+  const nomesCategorias = categoriasData.map(item => item.categoria);
+  const totaisCategorias = categoriasData.map(item => item.total);
+
+  const ctxCategorias = document.getElementById('graficoCategorias');
+
+  new Chart(ctxCategorias, {
+    type: 'doughnut',
+    data: {
+      labels: nomesCategorias,
+      datasets: [{
+        data: totaisCategorias,
+        backgroundColor: [
+          '#4CAF50',
+          '#2196F3',
+          '#FF9800',
+          '#E91E63',
+          '#9C27B0',
+          '#FFC107'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: {
+          callbacks: {
+            label: (context) => {
+              const label = context.label || '';
+              const value = context.parsed || 0;
+              return `${label}: R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            }
+          }
+        }
+      }
+    }
+  });
 </script>
 {% endblock %}
