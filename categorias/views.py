@@ -103,12 +103,15 @@ def categoria_list(request):
                     messages.success(request, "Categoria cadastrada com sucesso!")
                     return redirect('categorias:categoria_list')
 
-            elif type_action == "delete":
+            elif type_action == "delete_confirm":
                 id = request.POST.get("id")
                 categoria = get_object_or_404(Categoria, pk=id)
                 categoria.delete()
                 messages.success(request, "Categoria excluída com sucesso!")
                 return redirect('categorias:categoria_list')
+            
+            messages.error(request, "Ação não concluida!")
+            return redirect('categorias:categoria_list')
 
     # GET request
     return render(request, 'categorias/categoria_list.html', context)

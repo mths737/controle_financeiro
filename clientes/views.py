@@ -130,7 +130,7 @@ def cliente_list(request):
             messages.error(request, "Erro ao cadastrar cliente. Verifique os campos.")
         return redirect('clientes:cliente_list')
 
-    elif action_type == "delete":
+    elif action_type == "delete_confirm":
         cliente = get_object_or_404(Cliente, pk=request.POST.get("id"))
         cliente.ativo = False
         cliente.save()

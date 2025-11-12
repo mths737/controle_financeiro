@@ -1,6 +1,6 @@
 {% load widget_tweaks %}
-<div id="filter" class="d-flex justify-content-center align-items-center container-fluid mb-2 row col-8 col-sm-8 col-md-8 col-lg-8">
-  <form method="get" class="d-flex mb-2 flex-grow-1 col-8 col-sm-8 col-md-8 col-lg-4">
+<div id="filter" class="d-flex justify-content-center align-items-center container-fluid ">
+  <form method="get" class="d-flex flex-grow-1 ">
     {{ filter.form.search|add_class:"form-control rounded-pill me-2" }}
     <button type="submit" class="btn btn-primary rounded-pill px-4">
       <i class="bi bi-search"></i>
@@ -8,7 +8,7 @@
   </form>
   {% if advanced_filter %}
   <button id="filter-extra"
-          class="btn btn-outline-secondary rounded-pill col-4 col-sm-4 col-md-4 col-lg-4 d-flex align-items-center justify-content-center"
+          class="btn btn-outline-secondary rounded-pill d-flex align-items-center justify-content-center"
           data-bs-toggle="offcanvas"
           data-bs-target="#filtrosOffcanvas">
       <i class="bi bi-funnel me-2"></i>

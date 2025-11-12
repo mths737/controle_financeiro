@@ -19,7 +19,7 @@
 
 #thead {
     width: 100%;
-    height: 40px;
+    height: 2rem;
     border-radius: 10px 10px 0px 0px !important;
     box-shadow: inset 0px 5px 12px 2px rgba(255, 255, 255, 0.2);
 }
@@ -27,6 +27,13 @@
 th { 
     background-color: rgba(0, 0, 0, 0) !important;
     padding: 0.25rem !important;
+}
+
+th form {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
 }
 
 th button {
