@@ -1,11 +1,11 @@
 :root {
-  --table-bg: white;
+  --table-bg: rgba(255, 255, 255, 0.5);
   --p-color: black;
 }
 
 /* Tema Escuro */
 [data-bs-theme="dark"] {
-  --table-bg: rgb(50, 50, 50);
+  --table-bg: rgba(0, 0, 0);
   --p-color: white;
 }
 
@@ -45,7 +45,7 @@ th button {
     height: 100%;
     display: flex;
     border: 0px;
-    font-size: clamp(1vw + 0.2rem, 2vw + 0.2rem, 0.8rem) !important;
+    font-size: clamp(10px, 2vh, 20px) !important;
 }
 
 tbody tr {
@@ -66,7 +66,7 @@ tbody td {
     width: 100%;
     overflow:auto;
     padding: 0px !important;
-    font-size: clamp(1vw + 0.2rem, 2vw + 0.2rem, 0.8rem) !important;
+    font-size: clamp(10px, 2vh, 15px) !important;
 }
 
 #tbody:hover tr {
