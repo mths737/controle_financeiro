@@ -2,7 +2,7 @@
   --bg-color: rgb(200, 200, 200);
   --card-shadow: 0px 10px 5px 1px rgba(0, 0, 0, 0.3);
   --card-shadow-hover: 0px 15px 5px 1px rgba(0, 0, 0, 0.3);
-  --nav-bg-color: rgba(0, 0, 0, 0.5);
+  --nav-bg-color: rgba(0, 0, 0, 0.2);
   --card-bg-color: rgb(255, 255, 255);
 }
 
@@ -11,7 +11,7 @@
   --bg-color: #000000;
   --card-shadow: inset 0px -10px 5px 1px rgba(255, 255, 255, 0.3);
   --card-shadow-hover: inset 0px -5px 5px 1px rgba(255, 255, 255, 0.3);
-  --nav-bg-color: rgba(255, 255, 255, 0.5);
+  --nav-bg-color: rgba(255, 255, 255, 0.2);
   --card-bg-color: rgb(50, 50, 50);
 }
 
@@ -36,7 +36,7 @@ body {
 
 body nav {
     width: 100%;
-    height: clamp(60px, 15vh, 70px);
+    height: clamp(50px, 7vh, 60px);
     padding: 0px !important;
     margin: 0px !important;
     background-color: var(--nav-bg-color);
@@ -45,7 +45,7 @@ body nav {
 .nav-link {
     color: rgba(255, 255, 255, 0.8);
     font-weight: bold;
-    font-size: clamp(20px, 1.5vh, 25px);
+    font-size: clamp(15px, 1.5vh, 20px);
 }
 
 .nav-link:hover {
@@ -55,14 +55,14 @@ body nav {
 
 body main {
     width: 100%;
-    height: calc(100% - clamp(75px, 20vh, 100px)) !important;
+    height: calc(100% - clamp(66px, 10vh, 80px)) !important;
     display: flex;
     padding: 0px;
     margin: 0px;
 }
 
 body footer {
-    height: clamp(15px, 5vh, 30px);
+    height: clamp(16px, 3vh, 20px);
     width: 100%;
     display: flex;
     padding: 0px;
@@ -77,7 +77,7 @@ body footer {
 footer p {
     margin: 0px;
     padding: 0px;
-    font-size: clamp(13px, 1.5vh, 25px);
+    font-size: clamp(12px, 1.5vh, 25px);
 }
 
 input, select, option {
@@ -108,7 +108,7 @@ button {
 
 #header {
     width: 100%;
-    height: calc(0% + 6vh);
+    height: calc(0% + 8vh);
     justify-content: center !important;
     align-items: center;
     --bs-gutter-x: 0;
@@ -122,7 +122,7 @@ button {
     height: 100%;
 }
 
-#header input {
+#header input, #header button {
     font-size: 2vh;
 }
 
@@ -130,10 +130,10 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: calc(100% - 12vh);
+    height: calc(100% - 14vh);
     --bs-gutter-x: 0;
     border-radius: 10px;
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: var(--nav-bg-color);
 }
 
 #footer {
