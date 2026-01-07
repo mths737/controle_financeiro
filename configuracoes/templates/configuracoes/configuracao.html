@@ -5,11 +5,11 @@
 {% block content %}
 <div id="content" class="container-fluid">
 
-    <div id="header" class="row mt-2 mb-2 fs-2">
-        <h2 class="fw-bold d-flex align-items-center mb-2 col"><i class="bi bi-gear-fill fs-5 me-2"></i>Configurações do Sistema</h2>
+    <div id="header" class="row">
+        <h2 class="fw-bold d-flex align-items-center mb-2 col-12"><i class="bi bi-gear-fill fs-5 me-2"></i>Configurações do Sistema</h2>
     </div>
 
-    <form method="post" enctype="multipart/form-data" id="main-content" class="row g-4">
+    <form method="post" enctype="multipart/form-data" id="main-content" class="row justify-content-between">
         {% csrf_token %}
 
         <div class="col-lg-6">
@@ -70,18 +70,4 @@
 
 </div>
 
-<style>
-    /* Estilização extra */
-    .card {
-        border-radius: 12px;
-    }
-    .card-header {
-        font-weight: 600;
-        font-size: 1rem;
-    }
-    input, select {
-        width: 100%;
-        border-radius: 8px;
-    }
-</style>
 {% endblock %}

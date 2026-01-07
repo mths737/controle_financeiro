@@ -109,7 +109,6 @@ button {
 #header {
     width: 100%;
     height: calc(0% + 8vh);
-    justify-content: center !important;
     align-items: center;
     --bs-gutter-x: 0;
     padding: 0;

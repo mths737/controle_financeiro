@@ -6,3 +6,9 @@ def tema_context(request):
         return {'tema': config.tema if config else 'light'}
     except:
         return {'tema': 'light'}
+    
+def logo_context(request):
+    config = Configuracao.objects.first()
+    return {
+        "logo": config.logo
+    }

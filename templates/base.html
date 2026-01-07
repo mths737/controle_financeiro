@@ -25,6 +25,14 @@
         <div class="container">
             {% include 'menu.html' %}
             <div class="collapse navbar-collapse">
+                {% if logo %}
+                    <img src="{{ logo.url }}"
+                         alt="Logo do sistema"
+                         height="40"
+                         class="me-2">
+                {% else %}
+                    <span class="fw-bold">Meu Sistema</span>
+                {% endif %}
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="/dashboard/" {% if dashboard %}style="color:white;"{% endif %}>
